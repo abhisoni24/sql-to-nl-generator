@@ -1,0 +1,401 @@
+{
+  "metadata": {
+    "timestamp": "20251218_190011",
+    "llm_provider": "gemini",
+    "model_name": "gemini-3-flash-preview",
+    "num_samples": 10,
+    "num_total_tests": 40
+  },
+  "tests": [
+    {
+      "sample_id": 980,
+      "ground_truth_sql": "SELECT l1.user_id FROM likes AS l1 WHERE l1.user_id = 290 ORDER BY l1.liked_at",
+      "complexity": "simple",
+      "vanilla": {
+        "prompt_type": "vanilla",
+        "nl_prompt": "Get l1.user_id from likes (as l1) where l1.user_id equals 290 ordered by l1.liked_at ascending.",
+        "generated_sql": "SELECT l1.user_id FROM likes AS l1 WHERE l1.user_id = 290 ORDER BY l1.liked_at ASC;",
+        "success": true,
+        "error": null,
+        "raw_response": "SELECT l1.user_id FROM likes AS l1 WHERE l1.user_id = 290 ORDER BY l1.liked_at ASC;"
+      },
+      "variations": [
+        {
+          "prompt_type": "variation_1",
+          "nl_prompt": "I want to i need to retrieve the following column: l1.user_id from the table named likes (as l1) specifically filtering for records where the condition is: l1.user_id equals 290 organized by l1.liked_at ascending please.",
+          "generated_sql": "SELECT l1.user_id FROM likes AS l1 WHERE l1.user_id = 290 ORDER BY l1.liked_at ASC;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT l1.user_id FROM likes AS l1 WHERE l1.user_id = 290 ORDER BY l1.liked_at ASC;"
+        },
+        {
+          "prompt_type": "variation_2",
+          "nl_prompt": "Let's get l1.user_id from likes (as l1) where l1.user_id equals 290 ordered by l1.liked_at ascending if possible.",
+          "generated_sql": "SELECT l1.user_id FROM likes AS l1 WHERE l1.user_id = 290 ORDER BY l1.liked_at ASC;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT l1.user_id FROM likes AS l1 WHERE l1.user_id = 290 ORDER BY l1.liked_at ASC;"
+        },
+        {
+          "prompt_type": "variation_3",
+          "nl_prompt": "I'd like to i need to retrieve the following column: l1.user_id from the table named likes (as l1) specifically filtering for records where the condition is: l1.user_id = 290 arranged by l1.liked_at ascending for me.",
+          "generated_sql": "SELECT l1.user_id FROM likes AS l1 WHERE l1.user_id = 290 ORDER BY l1.liked_at ASC;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT l1.user_id FROM likes AS l1 WHERE l1.user_id = 290 ORDER BY l1.liked_at ASC;"
+        }
+      ]
+    },
+    {
+      "sample_id": 333,
+      "ground_truth_sql": "SELECT * FROM likes AS l1 WHERE l1.liked_at < DATE_SUB(NOW(), INTERVAL 25 DAY)",
+      "complexity": "simple",
+      "vanilla": {
+        "prompt_type": "vanilla",
+        "nl_prompt": "Get all columns from likes (as l1) where l1.liked_at less than date minus 25 DAY.",
+        "generated_sql": "SELECT l1.* FROM likes AS l1 WHERE l1.liked_at < NOW() - INTERVAL 25 DAY",
+        "success": true,
+        "error": null,
+        "raw_response": "SELECT l1.* FROM likes AS l1 WHERE l1.liked_at < NOW() - INTERVAL 25 DAY"
+      },
+      "variations": [
+        {
+          "prompt_type": "variation_1",
+          "nl_prompt": "I'd like to sELECT all columns from likes (as l1) such that l1.liked_at less than date minus 25 DAY please.",
+          "generated_sql": "SELECT l1.* FROM likes AS l1 WHERE l1.liked_at < DATE_SUB(NOW(), INTERVAL 25 DAY)",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT l1.* FROM likes AS l1 WHERE l1.liked_at < DATE_SUB(NOW(), INTERVAL 25 DAY)"
+        },
+        {
+          "prompt_type": "variation_2",
+          "nl_prompt": "Let's find all columns within likes (as l1) such that l1.liked_at less than date minus 25 DAY please.",
+          "generated_sql": "SELECT l1.* FROM likes AS l1 WHERE l1.liked_at < DATE_SUB(NOW(), INTERVAL 25 DAY)",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT l1.* FROM likes AS l1 WHERE l1.liked_at < DATE_SUB(NOW(), INTERVAL 25 DAY)"
+        },
+        {
+          "prompt_type": "variation_3",
+          "nl_prompt": "I need to retrieve the following column: all columns from the table named likes (as l1) specifically filtering for records where the condition is: l1.liked_at less than date minus 25 DAY.",
+          "generated_sql": "SELECT l1.* FROM likes AS l1 WHERE l1.liked_at < NOW() - INTERVAL 25 DAY",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT l1.* FROM likes AS l1 WHERE l1.liked_at < NOW() - INTERVAL 25 DAY"
+        }
+      ]
+    },
+    {
+      "sample_id": 634,
+      "ground_truth_sql": "SELECT u4.is_verified, u4.id, f1.followed_at, f1.follower_id FROM follows AS f1 INNER JOIN users AS u4 ON f1.follower_id = u4.id",
+      "complexity": "join",
+      "vanilla": {
+        "prompt_type": "vanilla",
+        "nl_prompt": "Get u4.is_verified, u4.id, f1.followed_at, f1.follower_id from follows (as f1) joined with users (as u4) on f1.follower_id equals u4.id.",
+        "generated_sql": "SELECT u4.is_verified, u4.id, f1.followed_at, f1.follower_id FROM follows AS f1 JOIN users AS u4 ON f1.follower_id = u4.id;",
+        "success": true,
+        "error": null,
+        "raw_response": "SELECT u4.is_verified, u4.id, f1.followed_at, f1.follower_id FROM follows AS f1 JOIN users AS u4 ON f1.follower_id = u4.id;"
+      },
+      "variations": [
+        {
+          "prompt_type": "variation_1",
+          "nl_prompt": "Get u4.is_verified, u4.id, f1.followed_at, f1.follower_id FROM follows (as f1) joined with users (as u4) on f1.follower_id = u4.id.",
+          "generated_sql": "SELECT u4.is_verified, u4.id, f1.followed_at, f1.follower_id FROM follows AS f1 JOIN users AS u4 ON f1.follower_id = u4.id;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT u4.is_verified, u4.id, f1.followed_at, f1.follower_id FROM follows AS f1 JOIN users AS u4 ON f1.follower_id = u4.id;"
+        },
+        {
+          "prompt_type": "variation_2",
+          "nl_prompt": "Please i need to retrieve the following columns: u4.is_verified, u4.id, f1.followed_at, f1.follower_id from the table named follows (as f1) joined with users (as u4) on f1.follower_id equals u4.id if possible.",
+          "generated_sql": "SELECT u4.is_verified, u4.id, f1.followed_at, f1.follower_id FROM follows AS f1 JOIN users AS u4 ON f1.follower_id = u4.id;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT u4.is_verified, u4.id, f1.followed_at, f1.follower_id FROM follows AS f1 JOIN users AS u4 ON f1.follower_id = u4.id;"
+        },
+        {
+          "prompt_type": "variation_3",
+          "nl_prompt": "I'd like to i need to retrieve the following columns: u4.is_verified, u4.id, f1.followed_at, f1.follower_id from the table named follows (as f1) joined with users (as u4) on f1.follower_id equals u4.id for me.",
+          "generated_sql": "SELECT u4.is_verified, u4.id, f1.followed_at, f1.follower_id FROM follows AS f1 JOIN users AS u4 ON f1.follower_id = u4.id;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT u4.is_verified, u4.id, f1.followed_at, f1.follower_id FROM follows AS f1 JOIN users AS u4 ON f1.follower_id = u4.id;"
+        }
+      ]
+    },
+    {
+      "sample_id": 452,
+      "ground_truth_sql": "SELECT c1.comment_text, COUNT(*) AS count_all FROM comments AS c1 GROUP BY c1.comment_text HAVING COUNT(*) > 5",
+      "complexity": "aggregate",
+      "vanilla": {
+        "prompt_type": "vanilla",
+        "nl_prompt": "Get c1.comment_text, count of all rows from comments (as c1) grouped by c1.comment_text having count of all rows greater than 5.",
+        "generated_sql": "SELECT c1.comment_text, COUNT(*) FROM comments c1 GROUP BY c1.comment_text HAVING COUNT(*) > 5;",
+        "success": true,
+        "error": null,
+        "raw_response": "SELECT c1.comment_text, COUNT(*) FROM comments c1 GROUP BY c1.comment_text HAVING COUNT(*) > 5;"
+      },
+      "variations": [
+        {
+          "prompt_type": "variation_1",
+          "nl_prompt": "Get c1.comment_text, count of all rows from comments (as c1) grouped by c1.comment_text having count of all rows > 5.",
+          "generated_sql": "SELECT c1.comment_text, COUNT(*) FROM comments c1 GROUP BY c1.comment_text HAVING COUNT(*) > 5;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT c1.comment_text, COUNT(*) FROM comments c1 GROUP BY c1.comment_text HAVING COUNT(*) > 5;"
+        },
+        {
+          "prompt_type": "variation_2",
+          "nl_prompt": "I need to retrieve the following columns: c1.comment_text, count of all rows from the table named comments (as c1) grouped by c1.comment_text where aggregate count of all rows > 5.",
+          "generated_sql": "SELECT c1.comment_text, COUNT(*) FROM comments AS c1 GROUP BY c1.comment_text HAVING COUNT(*) > 5;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT c1.comment_text, COUNT(*) FROM comments AS c1 GROUP BY c1.comment_text HAVING COUNT(*) > 5;"
+        },
+        {
+          "prompt_type": "variation_3",
+          "nl_prompt": "SELECT c1.comment_text, count of all rows FROM comments (as c1) grouped by c1.comment_text HAVING count of all rows greater than 5.",
+          "generated_sql": "SELECT c1.comment_text, COUNT(*) FROM comments AS c1 GROUP BY c1.comment_text HAVING COUNT(*) > 5;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT c1.comment_text, COUNT(*) FROM comments AS c1 GROUP BY c1.comment_text HAVING COUNT(*) > 5;"
+        }
+      ]
+    },
+    {
+      "sample_id": 663,
+      "ground_truth_sql": "INSERT INTO likes (user_id, post_id, liked_at) VALUES (883, 43, NOW())",
+      "complexity": "insert",
+      "vanilla": {
+        "prompt_type": "vanilla",
+        "nl_prompt": "Insert into likes the values (883, 43, NOW()).",
+        "generated_sql": "INSERT INTO likes (user_id, post_id, liked_at) VALUES (883, 43, NOW());",
+        "success": true,
+        "error": null,
+        "raw_response": "INSERT INTO likes (user_id, post_id, liked_at) VALUES (883, 43, NOW());"
+      },
+      "variations": [
+        {
+          "prompt_type": "variation_1",
+          "nl_prompt": "Let's insert into likes the values (883, 43, NOW()).",
+          "generated_sql": "INSERT INTO likes (user_id, post_id, liked_at) VALUES (883, 43, NOW());",
+          "success": true,
+          "error": null,
+          "raw_response": "INSERT INTO likes (user_id, post_id, liked_at) VALUES (883, 43, NOW());"
+        },
+        {
+          "prompt_type": "variation_2",
+          "nl_prompt": "Please insert into likes the values (883, 43, NOW()) if possible.",
+          "generated_sql": "INSERT INTO likes (user_id, post_id, liked_at) VALUES (883, 43, NOW());",
+          "success": true,
+          "error": null,
+          "raw_response": "INSERT INTO likes (user_id, post_id, liked_at) VALUES (883, 43, NOW());"
+        },
+        {
+          "prompt_type": "variation_3",
+          "nl_prompt": "Please insert into likes the values (883, 43, NOW()) please.",
+          "generated_sql": "INSERT INTO likes (user_id, post_id, liked_at) VALUES (883, 43, NOW());",
+          "success": true,
+          "error": null,
+          "raw_response": "INSERT INTO likes (user_id, post_id, liked_at) VALUES (883, 43, NOW());"
+        }
+      ]
+    },
+    {
+      "sample_id": 834,
+      "ground_truth_sql": "SELECT u1.username, u1.country_code, f2.followed_at FROM users AS u1 LEFT JOIN follows AS f2 ON u1.id = f2.follower_id",
+      "complexity": "join",
+      "vanilla": {
+        "prompt_type": "vanilla",
+        "nl_prompt": "Get u1.username, u1.country_code, f2.followed_at from users (as u1) LEFT joined with follows (as f2) on u1.id equals f2.follower_id.",
+        "generated_sql": "SELECT u1.username, u1.country_code, f2.followed_at FROM users AS u1 LEFT JOIN follows AS f2 ON u1.id = f2.follower_id;",
+        "success": true,
+        "error": null,
+        "raw_response": "SELECT u1.username, u1.country_code, f2.followed_at FROM users AS u1 LEFT JOIN follows AS f2 ON u1.id = f2.follower_id;"
+      },
+      "variations": [
+        {
+          "prompt_type": "variation_1",
+          "nl_prompt": "I need to retrieve the following columns: u1.username, u1.country_code, f2.followed_at from the table named users (as u1) LEFT joined with follows (as f2) on u1.id = f2.follower_id.",
+          "generated_sql": "SELECT u1.username, u1.country_code, f2.followed_at FROM users AS u1 LEFT JOIN follows AS f2 ON u1.id = f2.follower_id;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT u1.username, u1.country_code, f2.followed_at FROM users AS u1 LEFT JOIN follows AS f2 ON u1.id = f2.follower_id;"
+        },
+        {
+          "prompt_type": "variation_2",
+          "nl_prompt": "SELECT u1.username, u1.country_code, f2.followed_at in users (as u1) LEFT joined with follows (as f2) on u1.id = f2.follower_id.",
+          "generated_sql": "SELECT u1.username, u1.country_code, f2.followed_at FROM users AS u1 LEFT JOIN follows AS f2 ON u1.id = f2.follower_id;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT u1.username, u1.country_code, f2.followed_at FROM users AS u1 LEFT JOIN follows AS f2 ON u1.id = f2.follower_id;"
+        },
+        {
+          "prompt_type": "variation_3",
+          "nl_prompt": "Let's sELECT u1.username, u1.country_code, f2.followed_at from users (as u1) LEFT joined with follows (as f2) on u1.id = f2.follower_id for me.",
+          "generated_sql": "SELECT u1.username, u1.country_code, f2.followed_at FROM users AS u1 LEFT JOIN follows AS f2 ON u1.id = f2.follower_id",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT u1.username, u1.country_code, f2.followed_at FROM users AS u1 LEFT JOIN follows AS f2 ON u1.id = f2.follower_id"
+        }
+      ]
+    },
+    {
+      "sample_id": 164,
+      "ground_truth_sql": "SELECT p6.content, c1.user_id, c1.created_at, c1.comment_text FROM comments AS c1 INNER JOIN posts AS p6 ON c1.post_id = p6.id",
+      "complexity": "join",
+      "vanilla": {
+        "prompt_type": "vanilla",
+        "nl_prompt": "Get p6.content, c1.user_id, c1.created_at, c1.comment_text from comments (as c1) joined with posts (as p6) on c1.post_id equals p6.id.",
+        "generated_sql": "SELECT p6.content, c1.user_id, c1.created_at, c1.comment_text FROM comments AS c1 JOIN posts AS p6 ON c1.post_id = p6.id;",
+        "success": true,
+        "error": null,
+        "raw_response": "SELECT p6.content, c1.user_id, c1.created_at, c1.comment_text FROM comments AS c1 JOIN posts AS p6 ON c1.post_id = p6.id;"
+      },
+      "variations": [
+        {
+          "prompt_type": "variation_1",
+          "nl_prompt": "SELECT p6.content, c1.user_id, c1.created_at, c1.comment_text FROM comments (as c1) joined with posts (as p6) on c1.post_id equals p6.id.",
+          "generated_sql": "SELECT p6.content, c1.user_id, c1.created_at, c1.comment_text FROM comments AS c1 JOIN posts AS p6 ON c1.post_id = p6.id;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT p6.content, c1.user_id, c1.created_at, c1.comment_text FROM comments AS c1 JOIN posts AS p6 ON c1.post_id = p6.id;"
+        },
+        {
+          "prompt_type": "variation_2",
+          "nl_prompt": "Get p6.content, c1.user_id, c1.created_at, c1.comment_text from table comments (as c1) joined with posts (as p6) on c1.post_id equals p6.id.",
+          "generated_sql": "SELECT p6.content, c1.user_id, c1.created_at, c1.comment_text FROM comments AS c1 JOIN posts AS p6 ON c1.post_id = p6.id;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT p6.content, c1.user_id, c1.created_at, c1.comment_text FROM comments AS c1 JOIN posts AS p6 ON c1.post_id = p6.id;"
+        },
+        {
+          "prompt_type": "variation_3",
+          "nl_prompt": "I need to retrieve the following columns: p6.content, c1.user_id, c1.created_at, c1.comment_text from the table named comments (as c1) joined with posts (as p6) on c1.post_id equals p6.id.",
+          "generated_sql": "SELECT p6.content, c1.user_id, c1.created_at, c1.comment_text FROM comments AS c1 JOIN posts AS p6 ON c1.post_id = p6.id;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT p6.content, c1.user_id, c1.created_at, c1.comment_text FROM comments AS c1 JOIN posts AS p6 ON c1.post_id = p6.id;"
+        }
+      ]
+    },
+    {
+      "sample_id": 916,
+      "ground_truth_sql": "SELECT * FROM follows AS f1 WHERE f1.follower_id > 813 ORDER BY f1.followee_id",
+      "complexity": "simple",
+      "vanilla": {
+        "prompt_type": "vanilla",
+        "nl_prompt": "Get all columns from follows (as f1) where f1.follower_id greater than 813 ordered by f1.followee_id ascending.",
+        "generated_sql": "SELECT f1.* FROM follows AS f1 WHERE f1.follower_id > 813 ORDER BY f1.followee_id ASC;",
+        "success": true,
+        "error": null,
+        "raw_response": "SELECT f1.* FROM follows AS f1 WHERE f1.follower_id > 813 ORDER BY f1.followee_id ASC;"
+      },
+      "variations": [
+        {
+          "prompt_type": "variation_1",
+          "nl_prompt": "Could you i need to retrieve the following column: all columns from the table named follows (as f1) specifically filtering for records where the condition is: f1.follower_id > 813 ORDER BY f1.followee_id ascending.",
+          "generated_sql": "SELECT f1.* FROM follows AS f1 WHERE f1.follower_id > 813 ORDER BY f1.followee_id ASC;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT f1.* FROM follows AS f1 WHERE f1.follower_id > 813 ORDER BY f1.followee_id ASC;"
+        },
+        {
+          "prompt_type": "variation_2",
+          "nl_prompt": "Get all columns from follows (as f1) where f1.follower_id > 813 ordered by f1.followee_id ascending.",
+          "generated_sql": "SELECT * FROM follows AS f1 WHERE f1.follower_id > 813 ORDER BY f1.followee_id ASC;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT * FROM follows AS f1 WHERE f1.follower_id > 813 ORDER BY f1.followee_id ASC;"
+        },
+        {
+          "prompt_type": "variation_3",
+          "nl_prompt": "SELECT all columns from follows (as f1) where f1.follower_id > 813 ordered by f1.followee_id ascending.",
+          "generated_sql": "SELECT * FROM follows AS f1 WHERE f1.follower_id > 813 ORDER BY f1.followee_id ASC;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT * FROM follows AS f1 WHERE f1.follower_id > 813 ORDER BY f1.followee_id ASC;"
+        }
+      ]
+    },
+    {
+      "sample_id": 169,
+      "ground_truth_sql": "SELECT * FROM comments AS c1 LIMIT 80",
+      "complexity": "simple",
+      "vanilla": {
+        "prompt_type": "vanilla",
+        "nl_prompt": "Get all columns from comments (as c1) limited to 80 results.",
+        "generated_sql": "SELECT c1.* FROM comments AS c1 LIMIT 80;",
+        "success": true,
+        "error": null,
+        "raw_response": "SELECT c1.* FROM comments AS c1 LIMIT 80;"
+      },
+      "variations": [
+        {
+          "prompt_type": "variation_1",
+          "nl_prompt": "I need to retrieve the following column: all columns from the table named comments (as c1) LIMIT 80.",
+          "generated_sql": "SELECT * FROM comments AS c1 LIMIT 80;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT * FROM comments AS c1 LIMIT 80;"
+        },
+        {
+          "prompt_type": "variation_2",
+          "nl_prompt": "I need to retrieve the following column: all columns from the table named comments (as c1) limited to 80 results.",
+          "generated_sql": "SELECT c1.* FROM comments AS c1 LIMIT 80;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT c1.* FROM comments AS c1 LIMIT 80;"
+        },
+        {
+          "prompt_type": "variation_3",
+          "nl_prompt": "I need to retrieve the following column: all columns from the table named comments (as c1) with limit of 80 results.",
+          "generated_sql": "SELECT * FROM comments AS c1 LIMIT 80;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT * FROM comments AS c1 LIMIT 80;"
+        }
+      ]
+    },
+    {
+      "sample_id": 864,
+      "ground_truth_sql": "SELECT u8.is_verified, u8.id, c1.user_id, c1.comment_text FROM comments AS c1 LEFT JOIN users AS u8 ON c1.user_id = u8.id",
+      "complexity": "join",
+      "vanilla": {
+        "prompt_type": "vanilla",
+        "nl_prompt": "Get u8.is_verified, u8.id, c1.user_id, c1.comment_text from comments (as c1) LEFT joined with users (as u8) on c1.user_id equals u8.id.",
+        "generated_sql": "SELECT u8.is_verified, u8.id, c1.user_id, c1.comment_text FROM comments AS c1 LEFT JOIN users AS u8 ON c1.user_id = u8.id;",
+        "success": true,
+        "error": null,
+        "raw_response": "SELECT u8.is_verified, u8.id, c1.user_id, c1.comment_text FROM comments AS c1 LEFT JOIN users AS u8 ON c1.user_id = u8.id;"
+      },
+      "variations": [
+        {
+          "prompt_type": "variation_1",
+          "nl_prompt": "Please find u8.is_verified, u8.id, c1.user_id, c1.comment_text from comments (as c1) LEFT joined with users (as u8) on c1.user_id equals u8.id please.",
+          "generated_sql": "SELECT u8.is_verified, u8.id, c1.user_id, c1.comment_text FROM comments AS c1 LEFT JOIN users AS u8 ON c1.user_id = u8.id;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT u8.is_verified, u8.id, c1.user_id, c1.comment_text FROM comments AS c1 LEFT JOIN users AS u8 ON c1.user_id = u8.id;"
+        },
+        {
+          "prompt_type": "variation_2",
+          "nl_prompt": "I need to retrieve the following columns: u8.is_verified, u8.id, c1.user_id, c1.comment_text from the table named comments (as c1) LEFT joined with users (as u8) on c1.user_id equals u8.id.",
+          "generated_sql": "SELECT u8.is_verified, u8.id, c1.user_id, c1.comment_text FROM comments AS c1 LEFT JOIN users AS u8 ON c1.user_id = u8.id;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT u8.is_verified, u8.id, c1.user_id, c1.comment_text FROM comments AS c1 LEFT JOIN users AS u8 ON c1.user_id = u8.id;"
+        },
+        {
+          "prompt_type": "variation_3",
+          "nl_prompt": "Could you pull u8.is_verified, u8.id, c1.user_id, c1.comment_text in comments (as c1) LEFT joined with users (as u8) on c1.user_id equals u8.id please.",
+          "generated_sql": "SELECT u8.is_verified, u8.id, c1.user_id, c1.comment_text FROM comments AS c1 LEFT JOIN users AS u8 ON c1.user_id = u8.id;",
+          "success": true,
+          "error": null,
+          "raw_response": "SELECT u8.is_verified, u8.id, c1.user_id, c1.comment_text FROM comments AS c1 LEFT JOIN users AS u8 ON c1.user_id = u8.id;"
+        }
+      ]
+    }
+  ]
+}
