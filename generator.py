@@ -236,6 +236,12 @@ class SQLQueryGenerator:
                 # Flatten and pick a few
                 all_selects = s1 + s2
                 final_selects = random.sample(all_selects, min(len(all_selects), 4))
+                
+                # Remove redundancy: if * is selected, keep only * and remove specific columns
+                has_star = any(isinstance(s, exp.Star) for s in final_selects)
+                if has_star:
+                    final_selects = [s for s in final_selects if isinstance(s, exp.Star)]
+                
                 for s in final_selects: query = query.select(s, copy=False)
                 
                 if random.random() < 0.5:
