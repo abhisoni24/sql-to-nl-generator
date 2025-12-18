@@ -8,6 +8,7 @@ This iteration focused on enhancing the Natural Language renderer to generate **
 ### 1. Enhanced `nl_renderer.py`
 
 **Added 6 Perturbation Techniques:**
+![perturbation techniques distribution](../visualizations/perturbation_techniques.png)
 
 #### 1. Lexical Variation (Synonym Substitution)
 
@@ -332,14 +333,12 @@ grouped by user_id having count of all rows greater than 5.
 ### Quantitative Results
 - **Queries processed**: 1,000
 - **NL prompts generated**: 4,000 (1 vanilla + 3 variations per query)
-- **Success rate**: 100% (1,000/1,000 queries)
 - **Average variation diversity**: ~3 distinct techniques per variation
 
 ### Qualitative Observations
 - **Diversity**: Variations show clear stylistic differences
 - **Semantic preservation**: All variations maintain identical meaning
 - **Natural variety**: Mimics how developers naturally phrase SQL requests
-- **Combination power**: Multiple techniques applied simultaneously create realistic variations
 
 ---
 
@@ -347,18 +346,16 @@ grouped by user_id having count of all rows greater than 5.
 
 ### Code Changes
 - **`nl_renderer.py`**: +150 lines (perturbation infrastructure)
-- **`generate_nl_prompts.py`**: Updated to use `generate_variations()`
-- **Test coverage**: Created `test_variations.py` for validation
 
 ### Backward Compatibility
 - Default vanilla output (no perturbations) matches original behavior
 - Constructor parameter defaults ensure compatibility
-- Existing code using `render()` continues to work
+---
 
+<!-- 
 ---
 
 ## Use Cases
-
 This enhanced dataset enables:
 
 1. **Training robust NL-to-SQL models** with diverse natural language patterns
@@ -368,17 +365,4 @@ This enhanced dataset enables:
 5. **Few-shot learning** - provide multiple examples of same intent with different phrasings
 
 ---
-
-## Next Steps (Recommendations)
-
-1. **Quality evaluation**: Human review of variation quality
-2. **Diversity metrics**: Measure lexical and syntactic diversity across variations
-3. **Extended perturbations**: Add more sophisticated techniques (reordering, paraphrasing)
-4. **Configurable generation**: Allow users to specify desired perturbation mix
-5. **Application**: Use dataset to train/evaluate NL-to-SQL models
-
----
-
-## Conclusion
-
-Successfully implemented comprehensive NL prompt variation generation system using 6 perturbation techniques. Generated 4,000 diverse, semantically equivalent NL descriptions from 1,000 SQL queries. System is production-ready and provides significant value for ML training and evaluation pipelines.
+-->

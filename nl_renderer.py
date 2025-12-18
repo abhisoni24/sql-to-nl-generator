@@ -585,32 +585,38 @@ class SQLToNLRenderer:
         elif isinstance(expr, exp.EQ):
             left = self._render_expression(expr.this)
             right = self._render_expression(expr.expression)
-            return f"{left} equals {right}"
+            op = self._format_operator('eq')
+            return f"{left} {op} {right}"
         
         elif isinstance(expr, exp.NEQ):
             left = self._render_expression(expr.this)
             right = self._render_expression(expr.expression)
-            return f"{left} not equals {right}"
+            op = self._format_operator('neq')
+            return f"{left} {op} {right}"
         
         elif isinstance(expr, exp.GT):
             left = self._render_expression(expr.this)
             right = self._render_expression(expr.expression)
-            return f"{left} greater than {right}"
+            op = self._format_operator('gt')
+            return f"{left} {op} {right}"
         
         elif isinstance(expr, exp.GTE):
             left = self._render_expression(expr.this)
             right = self._render_expression(expr.expression)
-            return f"{left} greater than or equal to {right}"
+            op = self._format_operator('gte')
+            return f"{left} {op} {right}"
         
         elif isinstance(expr, exp.LT):
             left = self._render_expression(expr.this)
             right = self._render_expression(expr.expression)
-            return f"{left} less than {right}"
+            op = self._format_operator('lt')
+            return f"{left} {op} {right}"
         
         elif isinstance(expr, exp.LTE):
             left = self._render_expression(expr.this)
             right = self._render_expression(expr.expression)
-            return f"{left} less than or equal to {right}"
+            op = self._format_operator('lte')
+            return f"{left} {op} {right}"
         
         elif isinstance(expr, exp.Like):
             left = self._render_expression(expr.this)
