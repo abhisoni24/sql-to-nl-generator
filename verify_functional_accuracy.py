@@ -3,29 +3,34 @@ Functional Accuracy Verification Script for SQL Queries.
 
 Compares baseline SQL queries with LLM-generated SQL queries using:
 1. Syntax Check - Parse both queries to validate SQL syntax
-2. AST Comparison - Normalize and compare abstract syntax trees for structural equivalence
+2. Advanced AST Comparison - Optimize, qualify, and compare abstract syntax trees for structural equivalence
 """
 
 import json
 import sqlglot
 import os
-from sqlglot.optimizer import normalize, qualify
+from sqlglot import exp
+from sqlglot.optimizer import optimize
 from typing import Dict, Any, Tuple, Optional
 from datetime import datetime
 import sys
 
+# Import schema
+from schema import SCHEMA
 
 class SQLVerifier:
     """Verify functional accuracy of generated SQL against baseline."""
     
-    def __init__(self, dialect: str = 'mysql'):
+    def __init__(self, dialect: str = 'mysql', schema: Dict[str, Any] = None):
         """
         Initialize SQL verifier.
         
         Args:
             dialect: SQL dialect to use for parsing (default: mysql)
+            schema: Database schema for qualification and optimization
         """
         self.dialect = dialect
+        self.schema = schema
     
     def verify_single_query(
         self, 
@@ -80,34 +85,40 @@ class SQLVerifier:
             result['error'] = f"Generated syntax error: {str(e)}"
             return result
         
-        # Stage 2: AST Comparison
+        # Stage 2: AST Comparison (Advanced)
         try:
-            # Normalize both ASTs (normalize doesn't take dialect parameter)
-            baseline_normalized = normalize.normalize(baseline_ast)
-            generated_normalized = normalize.normalize(generated_ast)
+            # Optimize and Qualify both ASTs
+            # optimize() performs several transformations including:
+            # - qualifying tables and columns (if schema provided)
+            # - simplifying expressions
+            # - normalizing projections
+            baseline_optimized = optimize(baseline_ast, schema=self.schema, dialect=self.dialect)
+            generated_optimized = optimize(generated_ast, schema=self.schema, dialect=self.dialect)
             
             # Convert to canonical SQL strings
-            baseline_canonical = baseline_normalized.sql(dialect=self.dialect)
-            generated_canonical = generated_normalized.sql(dialect=self.dialect)
+            # Using bit_creature=True to ensure deterministic output for complex expressions if needed
+            # but standard .sql() usually suffices for optimized trees.
+            baseline_canonical = baseline_optimized.sql(dialect=self.dialect)
+            generated_canonical = generated_optimized.sql(dialect=self.dialect)
             
             result['baseline_normalized'] = baseline_canonical
             result['generated_normalized'] = generated_canonical
             
             # Compare
-            if baseline_canonical == generated_canonical:
+            if baseline_canonical.strip().rstrip(';') == generated_canonical.strip().rstrip(';'):
                 result['status'] = 'PASS_FAST'
-                result['stage'] = 'STAGE_2_AST'
+                result['stage'] = 'STAGE_2_AST_ADVANCED'
                 result['match'] = True
             else:
                 result['status'] = 'STRUCTURAL_MISMATCH'
-                result['stage'] = 'STAGE_2_AST'
+                result['stage'] = 'STAGE_2_AST_ADVANCED'
                 result['match'] = False
-                result['error'] = 'ASTs do not match after normalization'
+                result['error'] = 'ASTs do not match after advanced optimization'
         
         except Exception as e:
             result['status'] = 'AST_COMPARISON_ERROR'
-            result['stage'] = 'STAGE_2_AST'
-            result['error'] = f"AST comparison error: {str(e)}"
+            result['stage'] = 'STAGE_2_AST_ADVANCED'
+            result['error'] = f"Advanced AST comparison error: {str(e)}"
         
         return result
     
@@ -220,8 +231,8 @@ def main():
     
     args = parser.parse_args()
     
-    # Initialize verifier
-    verifier = SQLVerifier(dialect=args.dialect)
+    # Initialize verifier with schema
+    verifier = SQLVerifier(dialect=args.dialect, schema=SCHEMA)
     
     print(f"Verifying queries from: {args.results_file}")
     print("="*80)
@@ -237,21 +248,24 @@ def main():
         output_file = os.path.join(output_dir, args.output)
     else:
         timestamp = results['metadata']['timestamp']
-        output_file = os.path.join(output_dir, f"verification_results_{timestamp}.json")
+        output_file = os.path.join(output_dir, f"verification_results_advanced_{timestamp}.json")
     
     # Save results
     with open(output_file, 'w') as f:
         json.dump(results, f, indent=2)
     
     # Print summary
-    print("\nVerification Summary:")
+    print("\nVerification Summary (Advanced Optimization):")
     print("-" * 40)
     summary = results['summary']
-    print(f"Total Verified: {summary['total_verified']}")
-    print(f"  PASS_FAST (identical): {summary['pass_fast']} ({summary['pass_fast']/summary['total_verified']*100:.1f}%)")
-    print(f"  Syntax Errors: {summary['syntax_errors']} ({summary['syntax_errors']/summary['total_verified']*100:.1f}%)")
-    print(f"  Structural Mismatches: {summary['structural_mismatches']} ({summary['structural_mismatches']/summary['total_verified']*100:.1f}%)")
-    print(f"  AST Errors: {summary['ast_errors']} ({summary['ast_errors']/summary['total_verified']*100:.1f}%)")
+    if summary['total_verified'] > 0:
+        print(f"Total Verified: {summary['total_verified']}")
+        print(f"  PASS_FAST (identical): {summary['pass_fast']} ({summary['pass_fast']/summary['total_verified']*100:.1f}%)")
+        print(f"  Syntax Errors: {summary['syntax_errors']} ({summary['syntax_errors']/summary['total_verified']*100:.1f}%)")
+        print(f"  Structural Mismatches: {summary['structural_mismatches']} ({summary['structural_mismatches']/summary['total_verified']*100:.1f}%)")
+        print(f"  AST Errors: {summary['ast_errors']} ({summary['ast_errors']/summary['total_verified']*100:.1f}%)")
+    else:
+        print("No queries were verified.")
     print("="*80)
     print(f"✓ Results saved to: {output_file}")
 
