@@ -1,6 +1,6 @@
 """
-Pipeline to generate natural language prompts from SQL queries.
-Loads social_media_queries.json, parses each SQL, renders to NL, and updates JSON.
+Pipeline to generate natural language prompts with variations from SQL queries.
+Loads social_media_queries.json, parses each SQL, renders vanilla + 3 variations, and updates JSON.
 """
 
 import json
@@ -9,7 +9,7 @@ from nl_renderer import SQLToNLRenderer
 
 
 def generate_nl_prompts(input_file='social_media_queries.json', output_file='social_media_queries.json'):
-    """Generate NL prompts for all SQL queries in the dataset."""
+    """Generate NL prompts with variations for all SQL queries in the dataset."""
     
     # Load existing queries
     print(f"Loading {input_file}...")
@@ -22,7 +22,7 @@ def generate_nl_prompts(input_file='social_media_queries.json', output_file='soc
     renderer = SQLToNLRenderer()
     
     # Process each query
-    print("Generating natural language prompts...")
+    print("Generating natural language prompts with variations...")
     success_count = 0
     error_count = 0
     
@@ -33,19 +33,21 @@ def generate_nl_prompts(input_file='social_media_queries.json', output_file='soc
             # Parse SQL
             ast = parse_one(sql, dialect='mysql')
             
-            # Render to NL
-            nl_prompt = renderer.render(ast)
+            # Generate vanilla + 3 variations
+            results = renderer.generate_variations(ast, num_variations=3)
             
             # Add to data
-            query_data['nl_prompt'] = nl_prompt
+            query_data['nl_prompt'] = results['vanilla']
+            query_data['nl_prompt_variations'] = results['variations']
             success_count += 1
             
         except Exception as e:
             print(f"Error processing query {i}: {sql[:50]}... - {e}")
-            query_data['nl_prompt'] = f"[Error: Could not generate NL prompt]"
+            query_data['nl_prompt'] = "[Error: Could not generate NL prompt]"
+            query_data['nl_prompt_variations'] = []
             error_count += 1
     
-    print(f"Successfully generated {success_count} prompts, {error_count} errors.")
+    print(f"Successfully generated {success_count} prompts with variations, {error_count} errors.")
     
     # Save updated JSON
     print(f"Saving to {output_file}...")
@@ -56,12 +58,15 @@ def generate_nl_prompts(input_file='social_media_queries.json', output_file='soc
     
     # Print a few examples
     print("\n" + "="*80)
-    print("Sample NL Prompts:")
+    print("Sample NL Prompts with Variations:")
     print("="*80)
-    for i in range(min(5, len(queries))):
+    for i in range(min(3, len(queries))):
         print(f"\nQuery {i+1}:")
         print(f"SQL: {queries[i]['sql']}")
-        print(f"NL:  {queries[i]['nl_prompt']}")
+        print(f"Vanilla: {queries[i]['nl_prompt']}")
+        print("Variations:")
+        for j, var in enumerate(queries[i]['nl_prompt_variations'], 1):
+            print(f"  {j}. {var}")
     print("="*80)
 
 

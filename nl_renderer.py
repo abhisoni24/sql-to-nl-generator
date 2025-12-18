@@ -9,21 +9,165 @@ from sqlglot import exp
 class SQLToNLRenderer:
     """Renders SQL AST nodes to natural language using deterministic templates."""
     
-    def __init__(self):
-        pass
+    def __init__(
+        self,
+        use_variations=True,
+        verbosity='normal',
+        operator_style='mixed',
+        add_fluff=False,
+        code_switch_probability=0.0
+    ):
+        """
+        Initialize renderer with perturbation settings.
+        
+        Args:
+            use_variations: Enable lexical variation and aggregate variety
+            verbosity: 'terse', 'normal', or 'verbose'
+            operator_style: 'words', 'symbols', or 'mixed'
+            add_fluff: Add conversational prefixes/suffixes
+            code_switch_probability: Probability (0.0-1.0) of using SQL keywords
+        """
+        self.use_variations = use_variations
+        self.verbosity = verbosity
+        self.operator_style = operator_style
+        self.add_fluff = add_fluff
+        self.code_switch_prob = code_switch_probability
+        
+        # Synonym mappings for lexical variation
+        self.synonyms = {
+            'get': ['Get', 'Retrieve', 'Fetch', 'Select', 'Show', 'Find', 'Pull'],
+            'where': ['where', 'filtering by', 'with condition', 'such that', 'that match'],
+            'from': ['from', 'in', 'within', 'from table'],
+            'grouped by': ['grouped by', 'group by', 'organized by', 'categorized by', 'partitioned by'],
+            'ordered by': ['ordered by', 'sorted by', 'arranged by', 'organized by'],
+            'limited to': ['limited to', 'with limit of', 'taking only', 'restricted to', 'top'],
+            'having': ['having', 'with condition', 'where aggregate', 'filtered by'],
+            'joined with': ['joined with', 'join', 'combined with', 'merged with'],
+            'equals': ['equals', 'is', 'matches', '='],
+            'not equals': ['not equals', 'is not', 'differs from', '!=', '<>'],
+            'greater than': ['greater than', 'more than', 'exceeds', 'above', '>'],
+            'less than': ['less than', 'below', 'under', 'fewer than', '<'],
+            'greater than or equal to': ['greater than or equal to', 'at least', '>=', 'no less than'],
+            'less than or equal to': ['less than or equal to', 'at most', '<=', 'no more than'],
+            'like': ['like', 'matching pattern', 'similar to', 'matches'],
+            'in': ['in', 'within', 'among', 'one of'],
+        }
+        
+        # Aggregate description variations
+        self.agg_variations = {
+            'count': ['count of', 'number of', 'how many', 'total count of', 'tally of'],
+            'sum': ['sum of', 'total', 'add up', 'combined', 'total of'],
+            'avg': ['average of', 'mean', 'avg', 'average value of', 'mean value of'],
+            'min': ['minimum of', 'smallest', 'lowest', 'min', 'minimum value of'],
+            'max': ['maximum of', 'largest', 'highest', 'max', 'maximum value of']
+        }
+        
+        # Contextual fluff for conversational style
+        self.fluff_prefixes = [
+            "I need to", "Please", "Can you", "Let's", 
+            "I want to", "Show me how to", "Help me",
+            "Could you", "I'd like to", ""
+        ]
+        
+        self.fluff_suffixes = [
+            "please", "thanks", "for me", "if possible",
+            "when you get a chance", ""
+        ]
+        
+        # SQL keyword mappings for code-switching
+        self.sql_keyword_map = {
+            'get': 'SELECT',
+            'where': 'WHERE',
+            'from': 'FROM',
+            'grouped by': 'GROUP BY',
+            'ordered by': 'ORDER BY',
+            'limited to': 'LIMIT',
+            'having': 'HAVING',
+            'joined with': 'JOIN',
+            'left joined with': 'LEFT JOIN',
+            'right joined with': 'RIGHT JOIN',
+        }
+    
+    def _choose_word(self, canonical_form):
+        """Select a synonym based on variation mode."""
+        import random
+        if not self.use_variations:
+            # Return default (first option for most, or canonical for operators)
+            options = self.synonyms.get(canonical_form, [canonical_form])
+            return options[0] if options else canonical_form
+        return random.choice(self.synonyms.get(canonical_form, [canonical_form]))
+    
+    def _choose_agg_variant(self, agg_type):
+        """Choose variation for aggregate description."""
+        import random
+        if not self.use_variations:
+            return self.agg_variations[agg_type][0]
+        return random.choice(self.agg_variations.get(agg_type, ['aggregate']))
+    
+    def _format_operator(self, op_type):
+        """Get operator representation based on style."""
+        import random
+        operator_maps = {
+            'words': {
+                'eq': 'equals', 'neq': 'not equals',
+                'gt': 'greater than', 'gte': 'greater than or equal to',
+                'lt': 'less than', 'lte': 'less than or equal to',
+                'like': 'like', 'in': 'in'
+            },
+            'symbols': {
+                'eq': '=', 'neq': '!=',
+                'gt': '>', 'gte': '>=',
+                'lt': '<', 'lte': '<=',
+                'like': 'LIKE', 'in': 'IN'
+            }
+        }
+        
+        if self.operator_style == 'mixed':
+            style = random.choice(['words', 'symbols'])
+        else:
+            style = self.operator_style
+        
+        return operator_maps[style].get(op_type, op_type)
+    
+    def _maybe_sql_keyword(self, nl_word):
+        """Randomly decide to use SQL keyword instead of NL."""
+        import random
+        if self.code_switch_prob > 0 and random.random() < self.code_switch_prob:
+            return self.sql_keyword_map.get(nl_word, nl_word)
+        return nl_word
     
     def render(self, ast):
         """Main entry point: render any SQL statement to NL."""
+        import random
+        
+        # Generate base NL
         if isinstance(ast, exp.Select):
-            return self.render_select(ast)
+            base_nl = self.render_select(ast)
         elif isinstance(ast, exp.Insert):
-            return self.render_insert(ast)
+            base_nl = self.render_insert(ast)
         elif isinstance(ast, exp.Update):
-            return self.render_update(ast)
+            base_nl = self.render_update(ast)
         elif isinstance(ast, exp.Delete):
-            return self.render_delete(ast)
+            base_nl = self.render_delete(ast)
         else:
-            return f"Execute statement: {ast.sql()}"
+            base_nl = f"Execute statement: {ast.sql()}"
+        
+        # Apply fluff if enabled
+        if self.add_fluff and random.random() < 0.7:  # 70% chance to add fluff
+            prefix = random.choice(self.fluff_prefixes)
+            suffix = random.choice(self.fluff_suffixes)
+            
+            if prefix:
+                # Adjust capitalization: "I need to get users" not "I need to Get users"
+                base_nl = base_nl[0].lower() + base_nl[1:] if base_nl else base_nl
+                base_nl = f"{prefix} {base_nl}"
+            
+            if suffix:
+                # Remove trailing period before adding suffix
+                base_nl = base_nl.rstrip('.')
+                base_nl = f"{base_nl} {suffix}."
+        
+        return base_nl
     
     # ========== SELECT Statement ==========
     
@@ -71,7 +215,9 @@ class SQLToNLRenderer:
         """Render SELECT column list."""
         expressions = node.expressions
         if not expressions:
-            return "Get all columns"
+            get_word = self._maybe_sql_keyword('get')
+            get_word = self._choose_word(get_word if get_word != 'SELECT' else 'get')
+            return f"{get_word} all columns"
         
         col_descriptions = []
         for expr in expressions:
@@ -90,10 +236,26 @@ class SQLToNLRenderer:
             else:
                 col_descriptions.append(self._render_expression(expr))
         
-        if len(col_descriptions) == 1:
-            return f"Get {col_descriptions[0]}"
+        # Apply variations to "Get" keyword
+        get_word = self._maybe_sql_keyword('get')
+        if get_word == 'SELECT':
+            select_word = 'SELECT'
         else:
-            return f"Get {', '.join(col_descriptions)}"
+            select_word = self._choose_word('get')
+        
+        # Apply verbosity
+        if self.verbosity == 'terse':
+            return f"{select_word} {', '.join(col_descriptions)}"
+        elif self.verbosity == 'verbose':
+            if len(col_descriptions) == 1:
+                return f"I need to retrieve the following column: {col_descriptions[0]}"
+            else:
+                return f"I need to retrieve the following columns: {', '.join(col_descriptions)}"
+        else:  # normal
+            if len(col_descriptions) == 1:
+                return f"{select_word} {col_descriptions[0]}"
+            else:
+                return f"{select_word} {', '.join(col_descriptions)}"
     
     def _render_from_clause(self, node):
         """Render FROM clause with tables and joins."""
@@ -103,7 +265,20 @@ class SQLToNLRenderer:
         
         # Get base table
         table_expr = from_node.this
-        parts = [f"from {self._render_table(table_expr)}"]
+        table_name = self._render_table(table_expr)
+        
+        # Apply variations to "from" keyword
+        from_word = self._maybe_sql_keyword('from')
+        if from_word == 'FROM':
+            from_word = 'FROM'
+        else:
+            from_word = self._choose_word('from')
+        
+        # Apply verbosity
+        if self.verbosity == 'verbose':
+            parts = [f"from the table named {table_name}"]
+        else:
+            parts = [f"{from_word} {table_name}"]
         
         # Add joins
         joins = node.args.get('joins', [])
@@ -119,7 +294,21 @@ class SQLToNLRenderer:
             return None
         
         condition = self._render_expression(where_node.this)
-        return f"where {condition}"
+        
+        # Apply variations to "where" keyword
+        where_word = self._maybe_sql_keyword('where')
+        if where_word == 'WHERE':
+            where_word = 'WHERE'
+        else:
+            where_word = self._choose_word('where')
+        
+        # Apply verbosity
+        if self.verbosity == 'terse':
+            return f"{where_word} {condition}"
+        elif self.verbosity == 'verbose':
+            return f"specifically filtering for records where the condition is: {condition}"
+        else:  # normal
+            return f"{where_word} {condition}"
     
     def _render_group_by_clause(self, node):
         """Render GROUP BY clause."""
@@ -130,10 +319,17 @@ class SQLToNLRenderer:
         expressions = group.expressions if hasattr(group, 'expressions') else [group]
         cols = [self._render_expression(expr) for expr in expressions]
         
-        if len(cols) == 1:
-            return f"grouped by {cols[0]}"
+        # Apply variations
+        grouped_word = self._maybe_sql_keyword('grouped by')
+        if grouped_word == 'GROUP BY':
+            grouped_phrase = 'GROUP BY'
         else:
-            return f"grouped by {', '.join(cols)}"
+            grouped_phrase = self._choose_word('grouped by')
+        
+        if len(cols) == 1:
+            return f"{grouped_phrase} {cols[0]}"
+        else:
+            return f"{grouped_phrase} {', '.join(cols)}"
     
     def _render_having_clause(self, node):
         """Render HAVING clause."""
@@ -142,7 +338,15 @@ class SQLToNLRenderer:
             return None
         
         condition = self._render_expression(having.this)
-        return f"having {condition}"
+        
+        # Apply variations
+        having_word = self._maybe_sql_keyword('having')
+        if having_word == 'HAVING':
+            having_phrase = 'HAVING'
+        else:
+            having_phrase = self._choose_word('having')
+        
+        return f"{having_phrase} {condition}"
     
     def _render_order_by_clause(self, node):
         """Render ORDER BY clause."""
@@ -161,7 +365,14 @@ class SQLToNLRenderer:
             else:
                 order_parts.append(self._render_expression(expr))
         
-        return f"ordered by {', '.join(order_parts)}"
+        # Apply variations
+        ordered_word = self._maybe_sql_keyword('ordered by')
+        if ordered_word == 'ORDER BY':
+            ordered_phrase = 'ORDER BY'
+        else:
+            ordered_phrase = self._choose_word('ordered by')
+        
+        return f"{ordered_phrase} {', '.join(order_parts)}"
     
     def _render_limit_clause(self, node):
         """Render LIMIT clause."""
@@ -174,7 +385,14 @@ class SQLToNLRenderer:
             limit_val = self._render_expression(limit.expression)
         else:
             limit_val = self._render_expression(limit)
-        return f"limited to {limit_val} results"
+        
+        # Apply variations
+        limited_word = self._maybe_sql_keyword('limited to')
+        if limited_word == 'LIMIT':
+            return f"LIMIT {limit_val}"
+        else:
+            limited_phrase = self._choose_word('limited to')
+            return f"{limited_phrase} {limit_val} results"
     
     # ========== INSERT Statement ==========
     
@@ -445,3 +663,45 @@ class SQLToNLRenderer:
         # Fallback
         else:
             return f"expression"
+
+    def generate_variations(self, ast, num_variations=3):
+        """
+        Generate vanilla prompt plus multiple perturbed variations.
+        
+        Args:
+            ast: Parsed SQL AST
+            num_variations: Number of perturbed variations to generate
+        
+        Returns:
+            dict with 'vanilla' and 'variations' keys
+        """
+        import random
+        
+        # Generate vanilla version (no perturbations)
+        vanilla_renderer = SQLToNLRenderer(
+            use_variations=False,
+            verbosity='normal',
+            operator_style='words',
+            add_fluff=False,
+            code_switch_probability=0.0
+        )
+        vanilla_prompt = vanilla_renderer.render(ast)
+        
+        # Generate perturbed variations
+        variations = []
+        for _ in range(num_variations):
+            # Randomize perturbation settings
+            perturbed_renderer = SQLToNLRenderer(
+                use_variations=random.choice([True, False]),
+                verbosity=random.choice(['terse', 'normal', 'verbose']),
+                operator_style=random.choice(['words', 'symbols', 'mixed']),
+                add_fluff=random.choice([True, False]),
+                code_switch_probability=random.uniform(0.0, 0.5)
+            )
+            variation_prompt = perturbed_renderer.render(ast)
+            variations.append(variation_prompt)
+        
+        return {
+            'vanilla': vanilla_prompt,
+            'variations': variations
+        }
