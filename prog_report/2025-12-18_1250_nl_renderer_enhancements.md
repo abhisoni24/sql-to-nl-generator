@@ -5,10 +5,9 @@ This iteration focused on enhancing the Natural Language renderer to generate **
 
 ## Key Changes
 
-### 1. Enhanced `nl_renderer.py`
+### 1. Introduced Perturbations in the Natural Language Prompts
 
 **Added 6 Perturbation Techniques:**
-![perturbation techniques distribution](../visualizations/perturbation_techniques.png)
 
 #### 1. Lexical Variation (Synonym Substitution)
 
@@ -203,6 +202,8 @@ This iteration focused on enhancing the Natural Language renderer to generate **
 - NL: "Get users from table where age greater than 18"
 - Code-switched: "SELECT users FROM table WHERE age greater than 18"
 
+
+![perturbation techniques distribution](../visualizations/perturbation_techniques.png)
 ---
 
 **New Infrastructure:**
@@ -328,41 +329,98 @@ grouped by user_id having count of all rows greater than 5.
 
 ---
 
-## Impact & Results
+### Example 4: Nested Query (Subquery)
 
-### Quantitative Results
-- **Queries processed**: 1,000
-- **NL prompts generated**: 4,000 (1 vanilla + 3 variations per query)
-- **Average variation diversity**: ~3 distinct techniques per variation
+**SQL:**
+```sql
+SELECT * FROM users AS u1 
+WHERE u1.id IN (
+    SELECT sub_p.user_id FROM posts AS sub_p 
+    WHERE sub_p.id > 426
+)
+```
 
-### Qualitative Observations
-- **Diversity**: Variations show clear stylistic differences
-- **Semantic preservation**: All variations maintain identical meaning
-- **Natural variety**: Mimics how developers naturally phrase SQL requests
+**Vanilla NL:**
+```
+Get all columns from users (as u1) where u1.id in (subquery that: Get sub_p.user_id from posts (as sub_p) where sub_p.id greater than 426).
+```
+
+**Variations:**
+1. `Get all columns FROM users (as u1) WHERE u1.id in (subquery that: Get sub_p.user_id from posts (as sub_p) where sub_p.id > 426).`
+   - **Techniques**: Code-switching ("FROM", "WHERE"), Operator Format Variation (">")
+
+2. `Let's i need to retrieve the following column: all columns from the table named users (as u1) specifically filtering for records where the condition is: u1.id in (subquery that: I need to retrieve the following column: sub_p.user_id from the table named posts (as sub_p) specifically filtering for records where the condition is: sub_p.id greater than 426) thanks.`
+   - **Techniques**: Verbose verbosity, Contextual fluff ("Let's", "thanks")
+
+3. `I need to retrieve the following column: all columns from the table named users (as u1) specifically filtering for records where the condition is: u1.id in (subquery that: I need to retrieve the following column: sub_p.user_id from the table named posts (as sub_p) specifically filtering for records where the condition is: sub_p.id greater than 426).`
+   - **Technique**: Verbose verbosity
+
+---
+
+
+
+## Phase 2: Quality Assurance & Functional Validation
+
+This phase focused on ensuring the **quality, uniqueness, and functional accuracy** of the generated dataset. We implemented guaranteed uniqueness for NL prompts, fixed critical rendering bugs, and built a comprehensive LLM evaluation framework.
+
+### 1. Data Quality & Rendering Fixes
+
+#### Guaranteed Unique Variations
+- **Problem**: Random perturbation selection occasionally produced identical variations (up to 27% duplicates).
+- **Solution**: Implemented a **"Generate-with-Retry"** mechanism in `nl_renderer.py`.
+- **Impact**: **100% uniqueness** across all 4,000 NL prompts (1 vanilla + 3 Variations per query).
+
+#### Symbolic Operator Support (Bug Fix)
+- **Problem**: Numerical comparisons were hardcoded as words (e.g., "greater than"), ignoring the "symbolic" perturbation setting.
+- **Solution**: Updated `_render_expression()` to use the dynamic `_format_operator()` helper for all 6 comparison types (EQ, NEQ, GT, GTE, LT, LTE).
+- **Result**: Successfully introduced symbolic operators (`>`, `=`, `!=`) into 35% of variations, significantly increasing syntactic diversity.
+
+### 2. Enhanced Analytics & Visualizations
+
+Updated `analyze_results.py` to provide deeper data insights.
+![query distribution](../visualizations/sql_query_distribution.png)
+
+**New Metrics Added:**
+- **NL Uniqueness Rate**: Verified 100% uniqueness across the dataset.
+- **Prompt Length Analysis**: Variations are ~36% longer (mean 20.7 words) than vanilla prompts (mean 15.2 words).
+- **Perturbation Usage**: Visualized the distribution of techniques (Fluff: 58%, Symbols: 32%, Code-Switching: 26%, Verbose: 27%).
+
+### 3. LLM Testing Framework (Functional Correctness)
+
+Built a production-ready evaluation pipeline to verify if the generated NL prompts can be successfully converted back to SQL by state-of-the-art models.
+
+- **`llm_client.py`**: Extensible architecture supporting Gemini, OpenAI, and Claude. Integrated **Gemini-3-Flash** with 1,000 RPM capacity.
+- **`test_llm_sql_generation.py`**: Automated batch tester that samples the dataset and records LLM outputs in timestamped JSON logs.
+
+### 4. Advanced SQL Verification
+
+Created `verify_functional_accuracy.py` to compare LLM-generated SQL against ground truth using a 2-stage validation process:
+
+1. **Syntax Check**: Validates that all generated SQL is syntactically correct (100% pass).
+2. **Advanced AST Optimization**: Uses `sqlglot.optimizer.optimize` with schema qualification to identify semantic matches beyond simple string comparison.
+
+**Final Verification Results (Sample Set):**
+- **85% PASS_FAST**: Structurally and semantically identical to ground truth.
+- **15% Structural Mismatch**: Primarily minor syntax differences in date arithmetic (e.g., `DATE_SUB` vs `- INTERVAL`) that are functionally identical.
+- **0% Errors**: Gemini produced 100% executable SQL from both vanilla and highly perturbed prompts.
 
 ---
 
-## Technical Implementation
+## Discussion:
+1. How do we ascertain functional correctness? Can we give any kind of guarantee? Should we have static database with mock data for comprehensive functional correctness testing by testing symmetric difference? 
+2. Next we can prompt llm to generate sql code for sqlite and similar libraries. The verification problem of functional correctness remains the same there. Later on, the problem of security verification also emerges.
+3. The perturbations are random but still guided by SDT and still contain a lot of info about the system. Is it alright enough to proceed to the next step?
+4. So far, we have syntactically correct SQL statements, and their respective SDT guided natural language prompts (1 vanilla + 3 perturbed). The set of experiments we can do are:
 
-### Code Changes
-- **`nl_renderer.py`**: +150 lines (perturbation infrastructure)
+| Variation | Description |
+|-----------|-------------|
+| i. Raw NL Prompt → Raw SQL | Baseline: vanilla prompts converted to standard SQL |
+| ii. Raw NL Prompt → SQLite SQL | Vanilla prompts converted to SQLite-specific syntax |
+| iii. Perturbed NL Prompt → Raw SQL | Robustness test: perturbed prompts to standard SQL |
+| iv. Perturbed NL Prompt → SQLite SQL | Comprehensive test: perturbed prompts to SQLite syntax |
 
-### Backward Compatibility
-- Default vanilla output (no perturbations) matches original behavior
-- Constructor parameter defaults ensure compatibility
----
+This matrix allows us to measure:
+- **Dialect adaptability**: How well models handle dialect-specific features (LIMIT vs FETCH, date functions, etc.)
+- **Prompt robustness**: Whether perturbations degrade model performance
+- **Combined complexity**: Performance on both challenging prompts and unfamiliar dialects
 
-<!-- 
----
-
-## Use Cases
-This enhanced dataset enables:
-
-1. **Training robust NL-to-SQL models** with diverse natural language patterns
-2. **Data augmentation** for SQL generation tasks
-3. **Robustness testing** - evaluate model performance across paraphrases
-4. **Style transfer research** - study natural language variation in technical descriptions
-5. **Few-shot learning** - provide multiple examples of same intent with different phrasings
-
----
--->
