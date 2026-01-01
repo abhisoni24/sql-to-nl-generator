@@ -1,7 +1,7 @@
 import json
 import random
-from generator import SQLQueryGenerator
-from schema import SCHEMA, FOREIGN_KEYS
+from src.core.generator import SQLQueryGenerator
+from src.core.schema import SCHEMA, FOREIGN_KEYS
 
 from sqlglot import exp
 
@@ -33,10 +33,10 @@ def main():
             
     print(f"Successfully generated {len(output_data)} queries.")
     
-    with open('social_media_queries.json', 'w') as f:
+    with open('social_media_queries_verify.json', 'w') as f:
         json.dump(output_data, f, indent=2)
         
-    print("Saved to social_media_queries.json")
+    print("Saved to social_media_queries_verify.json")
 
 if __name__ == "__main__":
     main()

@@ -12,7 +12,7 @@ def analyze_and_visualize():
         data = json.load(f)
     
     # Ensure visualizations directory exists
-    os.makedirs('visualizations', exist_ok=True)
+    os.makedirs('visualizations_verify', exist_ok=True)
     
     print(f"Analyzing {len(data)} SQL queries...")
     print("="*60)
@@ -52,7 +52,7 @@ def analyze_and_visualize():
     ax2.set_title('Query Complexity Distribution')
     
     plt.tight_layout()
-    plt.savefig('visualizations/sql_query_distribution.png', dpi=300, bbox_inches='tight')
+    plt.savefig('visualizations_verify/sql_query_distribution.png', dpi=300, bbox_inches='tight')
     plt.close()
     
     # 3. Table Usage Frequency
@@ -71,7 +71,7 @@ def analyze_and_visualize():
     plt.ylabel('Count')
     plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.savefig('visualizations/table_usage.png', dpi=300, bbox_inches='tight')
+    plt.savefig('visualizations_verify/table_usage.png', dpi=300, bbox_inches='tight')
     plt.close()
     
     # 4. SQL Feature Coverage
@@ -101,7 +101,7 @@ def analyze_and_visualize():
     plt.ylabel('Count')
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
-    plt.savefig('visualizations/feature_coverage.png', dpi=300, bbox_inches='tight')
+    plt.savefig('visualizations_verify/feature_coverage.png', dpi=300, bbox_inches='tight')
     plt.close()
     
     # ========== PART 2: NL Prompt Analysis ==========
@@ -164,7 +164,7 @@ def analyze_and_visualize():
     ax2.grid(axis='y', alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('visualizations/nl_prompt_analysis.png', dpi=300, bbox_inches='tight')
+    plt.savefig('visualizations_verify/nl_prompt_analysis.png', dpi=300, bbox_inches='tight')
     plt.close()
     
     # 7. Perturbation Technique Detection (heuristic)
@@ -216,7 +216,7 @@ def analyze_and_visualize():
               fontsize=14, fontweight='bold')
     plt.xlabel('Count')
     plt.tight_layout()
-    plt.savefig('visualizations/perturbation_techniques.png', dpi=300, bbox_inches='tight')
+    plt.savefig('visualizations_verify/perturbation_techniques.png', dpi=300, bbox_inches='tight')
     plt.close()
     
     # 8. Summary Statistics
@@ -230,7 +230,7 @@ def analyze_and_visualize():
     print(f"Average Variation Prompt Length: {sum(variation_lengths)/len(variation_lengths):.1f} words")
     print("="*60)
     
-    print(f"\n✓ All visualizations saved to visualizations/ directory")
+    print(f"\n✓ All visualizations saved to visualizations_verify/ directory")
 
 if __name__ == "__main__":
     analyze_and_visualize()

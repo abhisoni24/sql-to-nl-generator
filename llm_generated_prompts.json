@@ -1,0 +1,1662 @@
+[
+  {
+    "sql_id": 871,
+    "prompt_id": "871_canonical",
+    "type": "canonical",
+    "sql": "SELECT * FROM (SELECT * FROM users AS inner_users WHERE inner_users.id < 121) AS derived_table WHERE derived_table.username = 'user'",
+    "prompt_text": "Get all columns from subquery (as derived_table) that: Get all columns from users (as inner_users) where inner_users.id less than 121 where derived_table.username equals user.",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 871,
+    "prompt_id": "871_var_1",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM (SELECT * FROM users AS inner_users WHERE inner_users.id < 121) AS derived_table WHERE derived_table.username = 'user'",
+    "prompt_text": "Could you please provide all the details for any users whose ID is less than 121 and whose username happens to be 'user'?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "colloquial",
+      "framing": "question",
+      "structural_ordering": "SQL-aligned",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 871,
+    "prompt_id": "871_var_2",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM (SELECT * FROM users AS inner_users WHERE inner_users.id < 121) AS derived_table WHERE derived_table.username = 'user'",
+    "prompt_text": "Could you possibly give me some general information about users who, you know, have 'user' as their name, but only for those whose ID is just under 121?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "vague",
+      "framing": "question",
+      "structural_ordering": "stream of consciousness",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 871,
+    "prompt_id": "871_var_3",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM (SELECT * FROM users AS inner_users WHERE inner_users.id < 121) AS derived_table WHERE derived_table.username = 'user'",
+    "prompt_text": "From the collection of user accounts with an identification number less than 121, could you please provide all particulars for any user whose username is precisely 'user'?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "formal",
+      "framing": "question",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 871,
+    "prompt_id": "871_var_4",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM (SELECT * FROM users AS inner_users WHERE inner_users.id < 121) AS derived_table WHERE derived_table.username = 'user'",
+    "prompt_text": "Could you pull up all the info for the user called 'user', but only if their ID is under 121? Just a quick check.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "goal-oriented",
+      "structural_ordering": "inverted logic",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 871,
+    "prompt_id": "871_var_5",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM (SELECT * FROM users AS inner_users WHERE inner_users.id < 121) AS derived_table WHERE derived_table.username = 'user'",
+    "prompt_text": "I'm trying to find some user details, you know, for that specific user, 'user'. But it's only those folks whose ID numbers are actually below 121. Can you help me out with that?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "goal-oriented",
+      "structural_ordering": "stream of consciousness",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 121,
+    "prompt_id": "121_canonical",
+    "type": "canonical",
+    "sql": "INSERT INTO likes (user_id, post_id, liked_at) VALUES (712, 521, NOW())",
+    "prompt_text": "Insert into likes the values (712, 521, NOW()).",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 121,
+    "prompt_id": "121_var_1",
+    "type": "llm_generated",
+    "sql": "INSERT INTO likes (user_id, post_id, liked_at) VALUES (712, 521, NOW())",
+    "prompt_text": "Might I inquire if user 712 could formally indicate approval for post 521?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "formal",
+      "framing": "question",
+      "structural_ordering": "inverted logic",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 121,
+    "prompt_id": "121_var_2",
+    "type": "llm_generated",
+    "sql": "INSERT INTO likes (user_id, post_id, liked_at) VALUES (712, 521, NOW())",
+    "prompt_text": "Oh, also, thinking about this... is it possible to put a like on that post, the one with ID 521, for user 712, because it was really quite good?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "vague",
+      "framing": "question",
+      "structural_ordering": "stream of consciousness",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 121,
+    "prompt_id": "121_var_3",
+    "type": "llm_generated",
+    "sql": "INSERT INTO likes (user_id, post_id, liked_at) VALUES (712, 521, NOW())",
+    "prompt_text": "For post 521, could you please have user 712 give it a like?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "command",
+      "structural_ordering": "inverted logic",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 121,
+    "prompt_id": "121_var_4",
+    "type": "llm_generated",
+    "sql": "INSERT INTO likes (user_id, post_id, liked_at) VALUES (712, 521, NOW())",
+    "prompt_text": "Oh, before I forget, I need to get this squared away. Let's just go ahead and register that user seventy-one-two just gave a like to post five-two-one, please. Gotta make sure that's recorded.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "vague",
+      "framing": "goal-oriented",
+      "structural_ordering": "stream of consciousness",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 121,
+    "prompt_id": "121_var_5",
+    "type": "llm_generated",
+    "sql": "INSERT INTO likes (user_id, post_id, liked_at) VALUES (712, 521, NOW())",
+    "prompt_text": "Can user 712 like post 521?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "question",
+      "structural_ordering": "SQL-aligned",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 719,
+    "prompt_id": "719_canonical",
+    "type": "canonical",
+    "sql": "SELECT u6.id, f1.followed_at, f1.followee_id, u6.signup_date FROM follows AS f1 INNER JOIN users AS u6 ON f1.follower_id = u6.id",
+    "prompt_text": "Get u6.id, f1.followed_at, f1.followee_id, u6.signup_date from follows (as f1) joined with users (as u6) on f1.follower_id equals u6.id.",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 719,
+    "prompt_id": "719_var_1",
+    "type": "llm_generated",
+    "sql": "SELECT u6.id, f1.followed_at, f1.followee_id, u6.signup_date FROM follows AS f1 INNER JOIN users AS u6 ON f1.follower_id = u6.id",
+    "prompt_text": "Could you kindly provide a comprehensive record of all follow engagements, detailing the precise timestamp of each follow interaction, the identifier of the user who was followed, and additionally, the user identifier and the registration date for the individual who initiated the follow?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "formal",
+      "framing": "goal-oriented",
+      "structural_ordering": "inverted logic",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 719,
+    "prompt_id": "719_var_2",
+    "type": "llm_generated",
+    "sql": "SELECT u6.id, f1.followed_at, f1.followee_id, u6.signup_date FROM follows AS f1 INNER JOIN users AS u6 ON f1.follower_id = u6.id",
+    "prompt_text": "Could you find me some information about followers, like when they joined, along with details about their following activities, specifically when they followed someone and who that was?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "vague",
+      "framing": "question",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 719,
+    "prompt_id": "719_var_3",
+    "type": "llm_generated",
+    "sql": "SELECT u6.id, f1.followed_at, f1.followee_id, u6.signup_date FROM follows AS f1 INNER JOIN users AS u6 ON f1.follower_id = u6.id",
+    "prompt_text": "I'm trying to figure something out about who follows whom. Just need some general details, you know? Like, can we get the unique identifier for the person doing the following, and maybe when they actually joined the platform? Plus, for those follow events, I'd like to see the exact moment it happened and who was followed.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "goal-oriented",
+      "structural_ordering": "stream of consciousness",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 719,
+    "prompt_id": "719_var_4",
+    "type": "llm_generated",
+    "sql": "SELECT u6.id, f1.followed_at, f1.followee_id, u6.signup_date FROM follows AS f1 INNER JOIN users AS u6 ON f1.follower_id = u6.id",
+    "prompt_text": "For every person who follows someone else, get me their signup date and ID, along with the ID of the user they followed and when that specific follow happened.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "colloquial",
+      "framing": "command",
+      "structural_ordering": "inverted logic",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 719,
+    "prompt_id": "719_var_5",
+    "type": "llm_generated",
+    "sql": "SELECT u6.id, f1.followed_at, f1.followee_id, u6.signup_date FROM follows AS f1 INNER JOIN users AS u6 ON f1.follower_id = u6.id",
+    "prompt_text": "For various follow relationships, could you perhaps list the identifier of the user who is following, the particular moment of that follow, the identifier of the user being followed, and the initial sign-up date for the follower?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "question",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 209,
+    "prompt_id": "209_canonical",
+    "type": "canonical",
+    "sql": "SELECT * FROM follows AS f1 INNER JOIN users AS u6 ON f1.follower_id = u6.id",
+    "prompt_text": "Get all columns from follows (as f1) joined with users (as u6) on f1.follower_id equals u6.id.",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 209,
+    "prompt_id": "209_var_1",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM follows AS f1 INNER JOIN users AS u6 ON f1.follower_id = u6.id",
+    "prompt_text": "Could you pull up some general details about the people who are followers, along with any associated user information?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "vague",
+      "framing": "goal-oriented",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 209,
+    "prompt_id": "209_var_2",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM follows AS f1 INNER JOIN users AS u6 ON f1.follower_id = u6.id",
+    "prompt_text": "Regarding all instances of users following other users, could you provide a comprehensive record of each follower, including their user profile details and the specifics of each follow relationship?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "formal",
+      "framing": "question",
+      "structural_ordering": "stream of consciousness",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 209,
+    "prompt_id": "209_var_3",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM follows AS f1 INNER JOIN users AS u6 ON f1.follower_id = u6.id",
+    "prompt_text": "Give me all the follows, you know, the follower ID and who they follow, but also add in all the user info for the follower.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "command",
+      "structural_ordering": "stream of consciousness",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 209,
+    "prompt_id": "209_var_4",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM follows AS f1 INNER JOIN users AS u6 ON f1.follower_id = u6.id",
+    "prompt_text": "Considering our user database, what comprehensive information is available for retrieval regarding each and every individual who functions in the role of a follower, encompassing all their associated user details?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "formal",
+      "framing": "question",
+      "structural_ordering": "stream of consciousness",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 209,
+    "prompt_id": "209_var_5",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM follows AS f1 INNER JOIN users AS u6 ON f1.follower_id = u6.id",
+    "prompt_text": "What are the comprehensive details of all users who are currently functioning as followers?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "formal",
+      "framing": "question",
+      "structural_ordering": "inverted logic",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 970,
+    "prompt_id": "970_canonical",
+    "type": "canonical",
+    "sql": "SELECT f1.followee_id, MIN(f1.follower_id) AS min_follower_id FROM follows AS f1 GROUP BY f1.followee_id",
+    "prompt_text": "Get f1.followee_id, minimum of f1.follower_id from follows (as f1) grouped by f1.followee_id.",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 970,
+    "prompt_id": "970_var_1",
+    "type": "llm_generated",
+    "sql": "SELECT f1.followee_id, MIN(f1.follower_id) AS min_follower_id FROM follows AS f1 GROUP BY f1.followee_id",
+    "prompt_text": "Could you show me everyone who's being followed, and for each of them, what's the lowest ID of someone who follows them?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "goal-oriented",
+      "structural_ordering": "stream of consciousness",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 970,
+    "prompt_id": "970_var_2",
+    "type": "llm_generated",
+    "sql": "SELECT f1.followee_id, MIN(f1.follower_id) AS min_follower_id FROM follows AS f1 GROUP BY f1.followee_id",
+    "prompt_text": "Figure out the absolute lowest ID of any follower for each unique person that someone follows.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "command",
+      "structural_ordering": "inverted logic",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 970,
+    "prompt_id": "970_var_3",
+    "type": "llm_generated",
+    "sql": "SELECT f1.followee_id, MIN(f1.follower_id) AS min_follower_id FROM follows AS f1 GROUP BY f1.followee_id",
+    "prompt_text": "Would you be so kind as to provide, for each distinct person who is followed, what their ID is, and perhaps also, what the absolute minimum ID is for any user who happens to follow them?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "question",
+      "structural_ordering": "SQL-aligned",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 970,
+    "prompt_id": "970_var_4",
+    "type": "llm_generated",
+    "sql": "SELECT f1.followee_id, MIN(f1.follower_id) AS min_follower_id FROM follows AS f1 GROUP BY f1.followee_id",
+    "prompt_text": "Retrieve the primary indicator for those being followed and the smallest primary indicator among their followers, considering each followed party individually.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "command",
+      "structural_ordering": "SQL-aligned",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 970,
+    "prompt_id": "970_var_5",
+    "type": "llm_generated",
+    "sql": "SELECT f1.followee_id, MIN(f1.follower_id) AS min_follower_id FROM follows AS f1 GROUP BY f1.followee_id",
+    "prompt_text": "For each person who's being followed, please show me their unique ID and, out of all their followers, just the very smallest follower ID. I need to check something out.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "command",
+      "structural_ordering": "inverted logic",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 129,
+    "prompt_id": "129_canonical",
+    "type": "canonical",
+    "sql": "INSERT INTO posts (user_id, content, posted_at, view_count) VALUES (644, 'Sample text 99', NOW(), 916)",
+    "prompt_text": "Insert into posts the values (644, Sample text 99, NOW(), 916).",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 129,
+    "prompt_id": "129_var_1",
+    "type": "llm_generated",
+    "sql": "INSERT INTO posts (user_id, content, posted_at, view_count) VALUES (644, 'Sample text 99', NOW(), 916)",
+    "prompt_text": "Could you make a post for user 644, with the text 'Sample text 99', and give it 916 views, happening right now?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "question",
+      "structural_ordering": "SQL-aligned",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 129,
+    "prompt_id": "129_var_2",
+    "type": "llm_generated",
+    "sql": "INSERT INTO posts (user_id, content, posted_at, view_count) VALUES (644, 'Sample text 99', NOW(), 916)",
+    "prompt_text": "Could you possibly establish a new entry that's marked with 916 views right off the bat, containing the text 'Sample text 99', and attribute this particular item to user 644, making sure it registers as being published at this very moment?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "question",
+      "structural_ordering": "inverted logic",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 129,
+    "prompt_id": "129_var_3",
+    "type": "llm_generated",
+    "sql": "INSERT INTO posts (user_id, content, posted_at, view_count) VALUES (644, 'Sample text 99', NOW(), 916)",
+    "prompt_text": "Kindly record a new post featuring \"Sample text 99\" as its content, attributing it to user ID 644, timestamping it with the current moment, and initializing its view count at 916.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "formal",
+      "framing": "command",
+      "structural_ordering": "inverted logic",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 129,
+    "prompt_id": "129_var_4",
+    "type": "llm_generated",
+    "sql": "INSERT INTO posts (user_id, content, posted_at, view_count) VALUES (644, 'Sample text 99', NOW(), 916)",
+    "prompt_text": "Considering our recent activities, please create a new post entry in the database. This post should be attributed to user ID 644, contain the text 'Sample text 99', be timestamped at the current moment, and be assigned an initial view count of 916.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "formal",
+      "framing": "goal-oriented",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 129,
+    "prompt_id": "129_var_5",
+    "type": "llm_generated",
+    "sql": "INSERT INTO posts (user_id, content, posted_at, view_count) VALUES (644, 'Sample text 99', NOW(), 916)",
+    "prompt_text": "Post 'Sample text 99' for user 644, give it 916 views and make it live now.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "command",
+      "structural_ordering": "stream of consciousness",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 309,
+    "prompt_id": "309_canonical",
+    "type": "canonical",
+    "sql": "SELECT c1.user_id, COUNT(c1.created_at) AS count_created_at FROM comments AS c1 GROUP BY c1.user_id",
+    "prompt_text": "Get c1.user_id, count of c1.created_at from comments (as c1) grouped by c1.user_id.",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 309,
+    "prompt_id": "309_var_1",
+    "type": "llm_generated",
+    "sql": "SELECT c1.user_id, COUNT(c1.created_at) AS count_created_at FROM comments AS c1 GROUP BY c1.user_id",
+    "prompt_text": "Obtain a tabulation enumerating the total volume of comments attributed to each distinct user.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "formal",
+      "framing": "goal-oriented",
+      "structural_ordering": "inverted logic",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 309,
+    "prompt_id": "309_var_2",
+    "type": "llm_generated",
+    "sql": "SELECT c1.user_id, COUNT(c1.created_at) AS count_created_at FROM comments AS c1 GROUP BY c1.user_id",
+    "prompt_text": "I need to check something out. Could you please show me each user ID, along with their general commenting frequency?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "command",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 309,
+    "prompt_id": "309_var_3",
+    "type": "llm_generated",
+    "sql": "SELECT c1.user_id, COUNT(c1.created_at) AS count_created_at FROM comments AS c1 GROUP BY c1.user_id",
+    "prompt_text": "Regarding user engagement metrics, please furnish a comprehensive tabulation detailing each user's unique identifier and the associated quantity of comments they have posted.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "formal",
+      "framing": "goal-oriented",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 309,
+    "prompt_id": "309_var_4",
+    "type": "llm_generated",
+    "sql": "SELECT c1.user_id, COUNT(c1.created_at) AS count_created_at FROM comments AS c1 GROUP BY c1.user_id",
+    "prompt_text": "Regarding all the comments, my aim is to get a sense of how many each person created.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "vague",
+      "framing": "goal-oriented",
+      "structural_ordering": "inverted logic",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 309,
+    "prompt_id": "309_var_5",
+    "type": "llm_generated",
+    "sql": "SELECT c1.user_id, COUNT(c1.created_at) AS count_created_at FROM comments AS c1 GROUP BY c1.user_id",
+    "prompt_text": "I'm trying to get a handle on the comment engagement. Can we tally up the instances of comments made, specifically for each unique individual who contributed them?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "goal-oriented",
+      "structural_ordering": "inverted logic",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 834,
+    "prompt_id": "834_canonical",
+    "type": "canonical",
+    "sql": "SELECT u1.username, u1.country_code, f2.followed_at FROM users AS u1 LEFT JOIN follows AS f2 ON u1.id = f2.follower_id",
+    "prompt_text": "Get u1.username, u1.country_code, f2.followed_at from users (as u1) LEFT joined with follows (as f2) on u1.id equals f2.follower_id.",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 834,
+    "prompt_id": "834_var_1",
+    "type": "llm_generated",
+    "sql": "SELECT u1.username, u1.country_code, f2.followed_at FROM users AS u1 LEFT JOIN follows AS f2 ON u1.id = f2.follower_id",
+    "prompt_text": "Hey, I'm trying to figure something out. Can you give me a complete list of all our users, showing their username and country code? And if a user has followed someone, please also include the timestamp of when that happened.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "colloquial",
+      "framing": "goal-oriented",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 834,
+    "prompt_id": "834_var_2",
+    "type": "llm_generated",
+    "sql": "SELECT u1.username, u1.country_code, f2.followed_at FROM users AS u1 LEFT JOIN follows AS f2 ON u1.id = f2.follower_id",
+    "prompt_text": "Hey, could you perhaps show me all the users, like who they are and where they're from, and for any of them that have followed someone, just let me know when they did that?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "question",
+      "structural_ordering": "inverted logic",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 834,
+    "prompt_id": "834_var_3",
+    "type": "llm_generated",
+    "sql": "SELECT u1.username, u1.country_code, f2.followed_at FROM users AS u1 LEFT JOIN follows AS f2 ON u1.id = f2.follower_id",
+    "prompt_text": "Provide the username and country code for all registered individuals, detailing any instances of their initiated follows and the respective timestamps.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "formal",
+      "framing": "command",
+      "structural_ordering": "stream of consciousness",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 834,
+    "prompt_id": "834_var_4",
+    "type": "llm_generated",
+    "sql": "SELECT u1.username, u1.country_code, f2.followed_at FROM users AS u1 LEFT JOIN follows AS f2 ON u1.id = f2.follower_id",
+    "prompt_text": "Could you kindly show me, for each user, their username, country, and the specific date they might have followed someone?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "question",
+      "structural_ordering": "SQL-aligned",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 834,
+    "prompt_id": "834_var_5",
+    "type": "llm_generated",
+    "sql": "SELECT u1.username, u1.country_code, f2.followed_at FROM users AS u1 LEFT JOIN follows AS f2 ON u1.id = f2.follower_id",
+    "prompt_text": "Retrieve the username and country code for all users, including the timestamp of any instances where they have followed another user.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "formal",
+      "framing": "goal-oriented",
+      "structural_ordering": "SQL-aligned",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 281,
+    "prompt_id": "281_canonical",
+    "type": "canonical",
+    "sql": "SELECT * FROM likes AS l1 INNER JOIN users AS u5 ON l1.user_id = u5.id WHERE u5.id >= 763",
+    "prompt_text": "Get all columns from likes (as l1) joined with users (as u5) on l1.user_id equals u5.id where u5.id greater than or equal to 763.",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 281,
+    "prompt_id": "281_var_1",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM likes AS l1 INNER JOIN users AS u5 ON l1.user_id = u5.id WHERE u5.id >= 763",
+    "prompt_text": "Hey, I'm doing some data cleanup. Can you grab all the info for me, like, everything about the users who've actually liked something? Make sure it's only for the ones with a user ID of 763 or higher, though.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "goal-oriented",
+      "structural_ordering": "stream of consciousness",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 281,
+    "prompt_id": "281_var_2",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM likes AS l1 INNER JOIN users AS u5 ON l1.user_id = u5.id WHERE u5.id >= 763",
+    "prompt_text": "For individuals with an identification number of 763 or higher, could you provide all available information regarding any likes they've made, along with their general profile data?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "question",
+      "structural_ordering": "SQL-aligned",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 281,
+    "prompt_id": "281_var_3",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM likes AS l1 INNER JOIN users AS u5 ON l1.user_id = u5.id WHERE u5.id >= 763",
+    "prompt_text": "Hey, could you pull up all the details about the likes and the users who made them, but specifically for users whose ID is 763 or higher? Just trying to get a sense of activity from those accounts, you know?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "colloquial",
+      "framing": "question",
+      "structural_ordering": "stream of consciousness",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 281,
+    "prompt_id": "281_var_4",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM likes AS l1 INNER JOIN users AS u5 ON l1.user_id = u5.id WHERE u5.id >= 763",
+    "prompt_text": "Concerning user entities possessing an identifier of 763 or higher, enumerate all associated like activities and relevant user profile information.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "formal",
+      "framing": "command",
+      "structural_ordering": "inverted logic",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 281,
+    "prompt_id": "281_var_5",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM likes AS l1 INNER JOIN users AS u5 ON l1.user_id = u5.id WHERE u5.id >= 763",
+    "prompt_text": "For those users whose ID is at least 763, gather all related interaction information.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "vague",
+      "framing": "command",
+      "structural_ordering": "inverted logic",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 11,
+    "prompt_id": "11_canonical",
+    "type": "canonical",
+    "sql": "INSERT INTO users (username, email, signup_date, is_verified, country_code) VALUES ('user207', 'user326@example.com', NOW(), FALSE, 'Sample text 43')",
+    "prompt_text": "Insert into users the values (user207, user326@example.com, NOW(), FALSE, Sample text 43).",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 11,
+    "prompt_id": "11_var_1",
+    "type": "llm_generated",
+    "sql": "INSERT INTO users (username, email, signup_date, is_verified, country_code) VALUES ('user207', 'user326@example.com', NOW(), FALSE, 'Sample text 43')",
+    "prompt_text": "Could you do me a favor and add a new user to the system right away? Their username should be 'user207', they're not verified, their email is 'user326@example.com', and their country code is 'Sample text 43'.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "colloquial",
+      "framing": "question",
+      "structural_ordering": "inverted logic",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 11,
+    "prompt_id": "11_var_2",
+    "type": "llm_generated",
+    "sql": "INSERT INTO users (username, email, signup_date, is_verified, country_code) VALUES ('user207', 'user326@example.com', NOW(), FALSE, 'Sample text 43')",
+    "prompt_text": "Can we add a profile for someone new named 'user207', email 'user326@example.com', maybe just having them unverified from 'Sample text 43'?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "vague",
+      "framing": "question",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 11,
+    "prompt_id": "11_var_3",
+    "type": "llm_generated",
+    "sql": "INSERT INTO users (username, email, signup_date, is_verified, country_code) VALUES ('user207', 'user326@example.com', NOW(), FALSE, 'Sample text 43')",
+    "prompt_text": "My goal is to put a new person into the user system. Let's make their login identifier 'user207' and their contact email 'user326@example.com'. They're joining just about now, and for now, they aren't marked as verified. Their general location reference is 'Sample text 43'.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "goal-oriented",
+      "structural_ordering": "SQL-aligned",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 11,
+    "prompt_id": "11_var_4",
+    "type": "llm_generated",
+    "sql": "INSERT INTO users (username, email, signup_date, is_verified, country_code) VALUES ('user207', 'user326@example.com', NOW(), FALSE, 'Sample text 43')",
+    "prompt_text": "Could you please, just as a quick thing, maybe establish a new user profile? I'm thinking about someone whose country is 'Sample text 43'. Their email happens to be 'user326@example.com', and the username would be 'user207'. We don't need to mark them as verified just yet, if you could manage that?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "vague",
+      "framing": "question",
+      "structural_ordering": "inverted logic",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 11,
+    "prompt_id": "11_var_5",
+    "type": "llm_generated",
+    "sql": "INSERT INTO users (username, email, signup_date, is_verified, country_code) VALUES ('user207', 'user326@example.com', NOW(), FALSE, 'Sample text 43')",
+    "prompt_text": "So, I was hoping to like, get a new account sorted out, if that's possible? My aim is to include someone with the name 'user207' and their contact detail as 'user326@example.com'. It should indicate that they're not yet confirmed, you know, not verified, and their location is associated with 'Sample text 43'. Oh, and this should all be registered as happening right about now.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "goal-oriented",
+      "structural_ordering": "stream of consciousness",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 512,
+    "prompt_id": "512_canonical",
+    "type": "canonical",
+    "sql": "SELECT p9.id, p9.view_count, l1.user_id, l1.post_id FROM likes AS l1 LEFT JOIN posts AS p9 ON l1.post_id = p9.id",
+    "prompt_text": "Get p9.id, p9.view_count, l1.user_id, l1.post_id from likes (as l1) LEFT joined with posts (as p9) on l1.post_id equals p9.id.",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 512,
+    "prompt_id": "512_var_1",
+    "type": "llm_generated",
+    "sql": "SELECT p9.id, p9.view_count, l1.user_id, l1.post_id FROM likes AS l1 LEFT JOIN posts AS p9 ON l1.post_id = p9.id",
+    "prompt_text": "Please provide, for each entry in the likes log, the unique identifier of the user who issued the like and the post's identifier it pertains to, accompanied by the corresponding post's identifier and its cumulative view count, if available, for a thorough analysis of user engagement.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "formal",
+      "framing": "command",
+      "structural_ordering": "inverted logic",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 512,
+    "prompt_id": "512_var_2",
+    "type": "llm_generated",
+    "sql": "SELECT p9.id, p9.view_count, l1.user_id, l1.post_id FROM likes AS l1 LEFT JOIN posts AS p9 ON l1.post_id = p9.id",
+    "prompt_text": "Generate a comprehensive dataset. For each record in the 'likes' table, present the associated post's 'id' and 'view_count', followed by the 'user_id' and 'post_id' from the like entry itself, ensuring all like entries are included irrespective of corresponding post data.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "formal",
+      "framing": "command",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 512,
+    "prompt_id": "512_var_3",
+    "type": "llm_generated",
+    "sql": "SELECT p9.id, p9.view_count, l1.user_id, l1.post_id FROM likes AS l1 LEFT JOIN posts AS p9 ON l1.post_id = p9.id",
+    "prompt_text": "Provide some general information concerning likes, ensuring to include any associated post details such as its overall view count, and then give me the user and various post references related to each.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "vague",
+      "framing": "command",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 512,
+    "prompt_id": "512_var_4",
+    "type": "llm_generated",
+    "sql": "SELECT p9.id, p9.view_count, l1.user_id, l1.post_id FROM likes AS l1 LEFT JOIN posts AS p9 ON l1.post_id = p9.id",
+    "prompt_text": "I'm trying to figure out all the stuff about the posts that have been liked, you know? Just give me the post's info and details on the like itself, like who did it and which post it was for. Thanks!",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "goal-oriented",
+      "structural_ordering": "inverted logic",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 512,
+    "prompt_id": "512_var_5",
+    "type": "llm_generated",
+    "sql": "SELECT p9.id, p9.view_count, l1.user_id, l1.post_id FROM likes AS l1 LEFT JOIN posts AS p9 ON l1.post_id = p9.id",
+    "prompt_text": "Kindly furnish, if you would be so kind, a comprehensive enumeration detailing all instances where a post has received an indication of approval. For each such entry, please include the distinct identifier of the endorsing user, the specific identifier of the post as recorded in the 'likes' log, and additionally, for the post itself, its primary identifier and its aggregate view count.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "formal",
+      "framing": "command",
+      "structural_ordering": "stream of consciousness",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 233,
+    "prompt_id": "233_canonical",
+    "type": "canonical",
+    "sql": "INSERT INTO posts (user_id, content, posted_at, view_count) VALUES (269, 'Sample text 100', NOW(), 330)",
+    "prompt_text": "Insert into posts the values (269, Sample text 100, NOW(), 330).",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 233,
+    "prompt_id": "233_var_1",
+    "type": "llm_generated",
+    "sql": "INSERT INTO posts (user_id, content, posted_at, view_count) VALUES (269, 'Sample text 100', NOW(), 330)",
+    "prompt_text": "I need to add some information into the posts collection, please. It should be associated with user 269, have the text 'Sample text 100', be marked as created just about now, and start off with around 330 views.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "goal-oriented",
+      "structural_ordering": "SQL-aligned",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 233,
+    "prompt_id": "233_var_2",
+    "type": "llm_generated",
+    "sql": "INSERT INTO posts (user_id, content, posted_at, view_count) VALUES (269, 'Sample text 100', NOW(), 330)",
+    "prompt_text": "Hey, I was just thinking, could we get something into the general collection of posts, perhaps something with the main body being 'Sample text 100', and let's get it to show about 330 views right from the start, just for that user, you know, number 269, and have it recorded as posted pretty much instantly?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "question",
+      "structural_ordering": "inverted logic",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 233,
+    "prompt_id": "233_var_3",
+    "type": "llm_generated",
+    "sql": "INSERT INTO posts (user_id, content, posted_at, view_count) VALUES (269, 'Sample text 100', NOW(), 330)",
+    "prompt_text": "Go ahead and make a new post for user 269 right now, with the text 'Sample text 100' and an initial view count of 330.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "colloquial",
+      "framing": "command",
+      "structural_ordering": "inverted logic",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 233,
+    "prompt_id": "233_var_4",
+    "type": "llm_generated",
+    "sql": "INSERT INTO posts (user_id, content, posted_at, view_count) VALUES (269, 'Sample text 100', NOW(), 330)",
+    "prompt_text": "Could you please facilitate the creation of a new entry within the posts table? For this new post, I would like to assign it to user ID 269, and its primary content should be recorded as 'Sample text 100'. Additionally, it needs to reflect the current timestamp as its posting time, with an initial view count established at 330.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "formal",
+      "framing": "goal-oriented",
+      "structural_ordering": "stream of consciousness",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 233,
+    "prompt_id": "233_var_5",
+    "type": "llm_generated",
+    "sql": "INSERT INTO posts (user_id, content, posted_at, view_count) VALUES (269, 'Sample text 100', NOW(), 330)",
+    "prompt_text": "Oh, I just remembered, could you throw in a new post? Yeah, for user 269, and for the content, make it 'Sample text 100'. And, um, just log it as posted right now, like, this very second. Give it, oh, about 330 views to start.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "command",
+      "structural_ordering": "stream of consciousness",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 945,
+    "prompt_id": "945_canonical",
+    "type": "canonical",
+    "sql": "SELECT p1.id, p1.view_count, p1.posted_at FROM posts AS p1 LIMIT 19",
+    "prompt_text": "Get p1.id, p1.view_count, p1.posted_at from posts (as p1) limited to 19 results.",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 945,
+    "prompt_id": "945_var_1",
+    "type": "llm_generated",
+    "sql": "SELECT p1.id, p1.view_count, p1.posted_at FROM posts AS p1 LIMIT 19",
+    "prompt_text": "Could you please show me the ID, view count, and post time for just 19 posts?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "command",
+      "structural_ordering": "SQL-aligned",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 945,
+    "prompt_id": "945_var_2",
+    "type": "llm_generated",
+    "sql": "SELECT p1.id, p1.view_count, p1.posted_at FROM posts AS p1 LIMIT 19",
+    "prompt_text": "I was wondering if it would be possible to obtain, for approximately the first nineteen entries in the posts table, the precise time each was posted along with its view count, and also its unique identifier, if you wouldn't mind?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "formal",
+      "framing": "question",
+      "structural_ordering": "stream of consciousness",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 945,
+    "prompt_id": "945_var_3",
+    "type": "llm_generated",
+    "sql": "SELECT p1.id, p1.view_count, p1.posted_at FROM posts AS p1 LIMIT 19",
+    "prompt_text": "If you would be so kind, please furnish the particulars regarding a selection of posts, specifically their identification numbers, associated view counts, and the precise timestamps of their publication, limiting the output to nineteen such records.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "formal",
+      "framing": "command",
+      "structural_ordering": "stream of consciousness",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 945,
+    "prompt_id": "945_var_4",
+    "type": "llm_generated",
+    "sql": "SELECT p1.id, p1.view_count, p1.posted_at FROM posts AS p1 LIMIT 19",
+    "prompt_text": "I am hoping to ascertain the particulars regarding posts; specifically, I require their respective identifiers, the total view counts, and the precise timestamps of their creation. Could you kindly provide just nineteen such entries for my review, please?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "formal",
+      "framing": "goal-oriented",
+      "structural_ordering": "stream of consciousness",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 945,
+    "prompt_id": "945_var_5",
+    "type": "llm_generated",
+    "sql": "SELECT p1.id, p1.view_count, p1.posted_at FROM posts AS p1 LIMIT 19",
+    "prompt_text": "You know, I was just curious about what's been posted lately. Could you pull up some details on a few posts, maybe around nineteen of them? I'd like to see, like, when they were actually put up and, obviously, how many eyeballs each one got.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "goal-oriented",
+      "structural_ordering": "stream of consciousness",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 276,
+    "prompt_id": "276_canonical",
+    "type": "canonical",
+    "sql": "SELECT * FROM comments AS c1 ORDER BY c1.created_at",
+    "prompt_text": "Get all columns from comments (as c1) ordered by c1.created_at ascending.",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 276,
+    "prompt_id": "276_var_1",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM comments AS c1 ORDER BY c1.created_at",
+    "prompt_text": "What are all the different comments we have, arranged by when they were first made?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "vague",
+      "framing": "question",
+      "structural_ordering": "inverted logic",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 276,
+    "prompt_id": "276_var_2",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM comments AS c1 ORDER BY c1.created_at",
+    "prompt_text": "Could you kindly provide a complete enumeration of all entries in the comments table, ensuring they are presented in the order of their creation date and time?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "formal",
+      "framing": "goal-oriented",
+      "structural_ordering": "stream of consciousness",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 276,
+    "prompt_id": "276_var_3",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM comments AS c1 ORDER BY c1.created_at",
+    "prompt_text": "I need to see all the comments, you know, the whole list. Could you arrange them for me by their creation time? I just want to glance over them.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "command",
+      "structural_ordering": "stream of consciousness",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 276,
+    "prompt_id": "276_var_4",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM comments AS c1 ORDER BY c1.created_at",
+    "prompt_text": "Show me the comments, just everything about them, arranged by when they showed up.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "command",
+      "structural_ordering": "stream of consciousness",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 276,
+    "prompt_id": "276_var_5",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM comments AS c1 ORDER BY c1.created_at",
+    "prompt_text": "List all the comments, ordered by their creation date.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "colloquial",
+      "framing": "command",
+      "structural_ordering": "stream of consciousness",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 825,
+    "prompt_id": "825_canonical",
+    "type": "canonical",
+    "sql": "SELECT * FROM likes AS l1 ORDER BY l1.user_id",
+    "prompt_text": "Get all columns from likes (as l1) ordered by l1.user_id ascending.",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 825,
+    "prompt_id": "825_var_1",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM likes AS l1 ORDER BY l1.user_id",
+    "prompt_text": "Retrieve all recorded information pertaining to user likes, ordered sequentially by the associated user identification number.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "formal",
+      "framing": "command",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 825,
+    "prompt_id": "825_var_2",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM likes AS l1 ORDER BY l1.user_id",
+    "prompt_text": "I'd really appreciate it if you could just get me all the details on the likes, if you don't mind, just make sure they're nicely ordered by the user who gave the like.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "colloquial",
+      "framing": "goal-oriented",
+      "structural_ordering": "inverted logic",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 825,
+    "prompt_id": "825_var_3",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM likes AS l1 ORDER BY l1.user_id",
+    "prompt_text": "What kind of general information is available for likes, arranged by the user who gave them?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "question",
+      "structural_ordering": "inverted logic",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 825,
+    "prompt_id": "825_var_4",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM likes AS l1 ORDER BY l1.user_id",
+    "prompt_text": "Could you get me all the info on likes? I'm trying to get a full picture here, so just show me everything, but please arrange it by the user ID, that'd be super helpful.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "colloquial",
+      "framing": "goal-oriented",
+      "structural_ordering": "stream of consciousness",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 825,
+    "prompt_id": "825_var_5",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM likes AS l1 ORDER BY l1.user_id",
+    "prompt_text": "To facilitate an audit of user preferences, display all columns from the 'likes' table, ensuring the results are ordered by the 'user_id' field.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "formal",
+      "framing": "command",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 778,
+    "prompt_id": "778_canonical",
+    "type": "canonical",
+    "sql": "SELECT u1.is_verified, l2.user_id, u1.email, l2.post_id FROM users AS u1 INNER JOIN likes AS l2 ON u1.id = l2.user_id WHERE l2.user_id < 462",
+    "prompt_text": "Get u1.is_verified, l2.user_id, u1.email, l2.post_id from users (as u1) joined with likes (as l2) on u1.id equals l2.user_id where l2.user_id less than 462.",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 778,
+    "prompt_id": "778_var_1",
+    "type": "llm_generated",
+    "sql": "SELECT u1.is_verified, l2.user_id, u1.email, l2.post_id FROM users AS u1 INNER JOIN likes AS l2 ON u1.id = l2.user_id WHERE l2.user_id < 462",
+    "prompt_text": "I need to ascertain some details, if you would be so kind. For users whose primary identifier is strictly less than 462, could you please furnish their email address and their verification status? This information, naturally, should be derived from instances where these users have registered a 'like' for any post. Just for completeness, kindly include the user's identification number itself and the respective post's identifier.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "formal",
+      "framing": "command",
+      "structural_ordering": "stream of consciousness",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 778,
+    "prompt_id": "778_var_2",
+    "type": "llm_generated",
+    "sql": "SELECT u1.is_verified, l2.user_id, u1.email, l2.post_id FROM users AS u1 INNER JOIN likes AS l2 ON u1.id = l2.user_id WHERE l2.user_id < 462",
+    "prompt_text": "Hey, could you perhaps tell me a bit about users who've liked posts and whose ID happens to be less than 462? Specifically, I'm wondering what their email is, if they're verified, and which post IDs they actually liked, along with their own user ID too.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "question",
+      "structural_ordering": "inverted logic",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 778,
+    "prompt_id": "778_var_3",
+    "type": "llm_generated",
+    "sql": "SELECT u1.is_verified, l2.user_id, u1.email, l2.post_id FROM users AS u1 INNER JOIN likes AS l2 ON u1.id = l2.user_id WHERE l2.user_id < 462",
+    "prompt_text": "Hey, if you don't mind, could you pull up some info for me? I need to see the email addresses of users who've liked posts. And also, their verified status, oh, and the specific post ID they liked. But only for those users whose ID is actually less than 462.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "command",
+      "structural_ordering": "stream of consciousness",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 778,
+    "prompt_id": "778_var_4",
+    "type": "llm_generated",
+    "sql": "SELECT u1.is_verified, l2.user_id, u1.email, l2.post_id FROM users AS u1 INNER JOIN likes AS l2 ON u1.id = l2.user_id WHERE l2.user_id < 462",
+    "prompt_text": "Could you please help me understand a little bit about users who have an ID below 462, but only if they've actually liked something? I'm just curious to get a general sense of their email, if they're verified, and what posts they've been liking.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "vague",
+      "framing": "goal-oriented",
+      "structural_ordering": "inverted logic",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 778,
+    "prompt_id": "778_var_5",
+    "type": "llm_generated",
+    "sql": "SELECT u1.is_verified, l2.user_id, u1.email, l2.post_id FROM users AS u1 INNER JOIN likes AS l2 ON u1.id = l2.user_id WHERE l2.user_id < 462",
+    "prompt_text": "Hey, I need a list showing the verification status, email, user ID, and post ID for users who have liked something, but only if their user ID is under 462.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "colloquial",
+      "framing": "command",
+      "structural_ordering": "SQL-aligned",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 144,
+    "prompt_id": "144_canonical",
+    "type": "canonical",
+    "sql": "SELECT p1.view_count, COUNT(*) AS count_all FROM posts AS p1 GROUP BY p1.view_count",
+    "prompt_text": "Get p1.view_count, count of all rows from posts (as p1) grouped by p1.view_count.",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 144,
+    "prompt_id": "144_var_1",
+    "type": "llm_generated",
+    "sql": "SELECT p1.view_count, COUNT(*) AS count_all FROM posts AS p1 GROUP BY p1.view_count",
+    "prompt_text": "Could you be so kind as to show me, for every distinct number of views, what that view count is and the total number of posts that have achieved it?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "colloquial",
+      "framing": "question",
+      "structural_ordering": "SQL-aligned",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 144,
+    "prompt_id": "144_var_2",
+    "type": "llm_generated",
+    "sql": "SELECT p1.view_count, COUNT(*) AS count_all FROM posts AS p1 GROUP BY p1.view_count",
+    "prompt_text": "I'm looking at our posts; can you show me each different view count value and, for each of those values, how many posts actually received that many views?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "colloquial",
+      "framing": "question",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 144,
+    "prompt_id": "144_var_3",
+    "type": "llm_generated",
+    "sql": "SELECT p1.view_count, COUNT(*) AS count_all FROM posts AS p1 GROUP BY p1.view_count",
+    "prompt_text": "Could you please provide a statistical breakdown? Specifically, for each distinct number of views, what is that view count, and how many posts have achieved precisely that number of views?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "formal",
+      "framing": "question",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 144,
+    "prompt_id": "144_var_4",
+    "type": "llm_generated",
+    "sql": "SELECT p1.view_count, COUNT(*) AS count_all FROM posts AS p1 GROUP BY p1.view_count",
+    "prompt_text": "Hey, I was just wondering if you could help me out please. I'd like to see how many posts there are in total for each different view count value.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "goal-oriented",
+      "structural_ordering": "inverted logic",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 144,
+    "prompt_id": "144_var_5",
+    "type": "llm_generated",
+    "sql": "SELECT p1.view_count, COUNT(*) AS count_all FROM posts AS p1 GROUP BY p1.view_count",
+    "prompt_text": "Across the entire collection of platform posts, how might one ascertain the total number of instances for each respective view count?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "formal",
+      "framing": "question",
+      "structural_ordering": "inverted logic",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 419,
+    "prompt_id": "419_canonical",
+    "type": "canonical",
+    "sql": "SELECT u1.is_verified FROM users AS u1 WHERE u1.signup_date > DATE_SUB(NOW(), INTERVAL 26 DAY) LIMIT 65",
+    "prompt_text": "Get u1.is_verified from users (as u1) where u1.signup_date greater than date minus 26 DAY limited to 65 results.",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 419,
+    "prompt_id": "419_var_1",
+    "type": "llm_generated",
+    "sql": "SELECT u1.is_verified FROM users AS u1 WHERE u1.signup_date > DATE_SUB(NOW(), INTERVAL 26 DAY) LIMIT 65",
+    "prompt_text": "Kindly provide the verification status for a maximum of 65 users who have initiated their registration within the preceding 26-day period.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "formal",
+      "framing": "command",
+      "structural_ordering": "stream of consciousness",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 419,
+    "prompt_id": "419_var_2",
+    "type": "llm_generated",
+    "sql": "SELECT u1.is_verified FROM users AS u1 WHERE u1.signup_date > DATE_SUB(NOW(), INTERVAL 26 DAY) LIMIT 65",
+    "prompt_text": "Retrieve the verification status for users who registered within the past twenty-six days, limiting the output to sixty-five entries.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "formal",
+      "framing": "goal-oriented",
+      "structural_ordering": "SQL-aligned",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 419,
+    "prompt_id": "419_var_3",
+    "type": "llm_generated",
+    "sql": "SELECT u1.is_verified FROM users AS u1 WHERE u1.signup_date > DATE_SUB(NOW(), INTERVAL 26 DAY) LIMIT 65",
+    "prompt_text": "I wonder about the verification stuff, you know, for some of the users who've come aboard kind of lately, like within the past twenty-six days or thereabouts? Could you maybe just get me a quick sense of that for around sixty-five of them?",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "question",
+      "structural_ordering": "stream of consciousness",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 419,
+    "prompt_id": "419_var_4",
+    "type": "llm_generated",
+    "sql": "SELECT u1.is_verified FROM users AS u1 WHERE u1.signup_date > DATE_SUB(NOW(), INTERVAL 26 DAY) LIMIT 65",
+    "prompt_text": "Hey, I'm wondering, for some of the users who registered not that long ago, like within the past 26 days or so, what's their verification thing? Just give me about 65 examples, if you could.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "question",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 419,
+    "prompt_id": "419_var_5",
+    "type": "llm_generated",
+    "sql": "SELECT u1.is_verified FROM users AS u1 WHERE u1.signup_date > DATE_SUB(NOW(), INTERVAL 26 DAY) LIMIT 65",
+    "prompt_text": "Could you please, if it's not too much bother, let me know the verification status for a number of users who've joined roughly within the past twenty-six days? Just about sixty-five of them would be perfect, thank you kindly.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "command",
+      "structural_ordering": "inverted logic",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 79,
+    "prompt_id": "79_canonical",
+    "type": "canonical",
+    "sql": "SELECT * FROM (SELECT * FROM users AS inner_users WHERE inner_users.country_code LIKE '%a%') AS derived_table",
+    "prompt_text": "Get all columns from subquery (as derived_table) that: Get all columns from users (as inner_users) where inner_users.country_code like %a%.",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 79,
+    "prompt_id": "79_var_1",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM (SELECT * FROM users AS inner_users WHERE inner_users.country_code LIKE '%a%') AS derived_table",
+    "prompt_text": "My aim is to get a sense of users associated with a country code containing the letter 'a'.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "vague",
+      "framing": "goal-oriented",
+      "structural_ordering": "SQL-aligned",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 79,
+    "prompt_id": "79_var_2",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM (SELECT * FROM users AS inner_users WHERE inner_users.country_code LIKE '%a%') AS derived_table",
+    "prompt_text": "I'm just trying to get a handle on some of our users, if you wouldn't mind. Could we please pull up all the general information we have for those specific individuals whose associated country code happens to contain the letter 'a' somewhere within it? That would be quite useful.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "goal-oriented",
+      "structural_ordering": "stream of consciousness",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 79,
+    "prompt_id": "79_var_3",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM (SELECT * FROM users AS inner_users WHERE inner_users.country_code LIKE '%a%') AS derived_table",
+    "prompt_text": "Give me all the data for users where their listed country identifier happens to contain the letter 'a' somewhere in it.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "vague",
+      "framing": "command",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 79,
+    "prompt_id": "79_var_4",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM (SELECT * FROM users AS inner_users WHERE inner_users.country_code LIKE '%a%') AS derived_table",
+    "prompt_text": "Please, could you just quickly find me all the details for users, I guess, the ones whose country code information vaguely includes the letter 'a' in it?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "vague",
+      "framing": "command",
+      "structural_ordering": "stream of consciousness",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 79,
+    "prompt_id": "79_var_5",
+    "type": "llm_generated",
+    "sql": "SELECT * FROM (SELECT * FROM users AS inner_users WHERE inner_users.country_code LIKE '%a%') AS derived_table",
+    "prompt_text": "Hey, could you show me all the users whose country code has an 'a' in it, by the way?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "question",
+      "structural_ordering": "SQL-aligned",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 625,
+    "prompt_id": "625_canonical",
+    "type": "canonical",
+    "sql": "SELECT c7.id, c7.post_id, c7.user_id, c7.created_at FROM users AS u1 INNER JOIN comments AS c7 ON u1.id = c7.user_id WHERE c7.post_id <= 836",
+    "prompt_text": "Get c7.id, c7.post_id, c7.user_id, c7.created_at from users (as u1) joined with comments (as c7) on u1.id equals c7.user_id where c7.post_id less than or equal to 836.",
+    "perturbation_config": null
+  },
+  {
+    "sql_id": 625,
+    "prompt_id": "625_var_1",
+    "type": "llm_generated",
+    "sql": "SELECT c7.id, c7.post_id, c7.user_id, c7.created_at FROM users AS u1 INNER JOIN comments AS c7 ON u1.id = c7.user_id WHERE c7.post_id <= 836",
+    "prompt_text": "Give me details for comments, all the comments that are on posts with an ID of 836 or smaller, I need their ID, the post's ID, the user's ID, and when they were created.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "colloquial",
+      "framing": "command",
+      "structural_ordering": "inverted logic",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 625,
+    "prompt_id": "625_var_2",
+    "type": "llm_generated",
+    "sql": "SELECT c7.id, c7.post_id, c7.user_id, c7.created_at FROM users AS u1 INNER JOIN comments AS c7 ON u1.id = c7.user_id WHERE c7.post_id <= 836",
+    "prompt_text": "I need to obtain specific details concerning comments authored by users. Please provide the unique identifier for each comment, its associated post ID, the user ID of the author, and the timestamp of its creation. It is crucial that these details are only for comments belonging to posts with an ID of 836 or less.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "formal",
+      "framing": "goal-oriented",
+      "structural_ordering": "stream of consciousness",
+      "noise": "light contextual distraction"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 625,
+    "prompt_id": "625_var_3",
+    "type": "llm_generated",
+    "sql": "SELECT c7.id, c7.post_id, c7.user_id, c7.created_at FROM users AS u1 INNER JOIN comments AS c7 ON u1.id = c7.user_id WHERE c7.post_id <= 836",
+    "prompt_text": "Regarding comments submitted to posts with an identifier up to 836, I request the details comprising their unique ID, the specific post ID, the authoring user's ID, and their exact creation time.",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "formal",
+      "framing": "goal-oriented",
+      "structural_ordering": "inverted logic",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 625,
+    "prompt_id": "625_var_4",
+    "type": "llm_generated",
+    "sql": "SELECT c7.id, c7.post_id, c7.user_id, c7.created_at FROM users AS u1 INNER JOIN comments AS c7 ON u1.id = c7.user_id WHERE c7.post_id <= 836",
+    "prompt_text": "Regarding any comments associated with posts that have an ID of 836 or lower, could you give me their full details, if you wouldn't mind?",
+    "perturbation_config": {
+      "semantic_completeness": "mildly underspecified",
+      "lexical_precision": "colloquial",
+      "framing": "question",
+      "structural_ordering": "inverted logic",
+      "noise": "polite filler"
+    },
+    "llm_model": "gemini-2.5-flash"
+  },
+  {
+    "sql_id": 625,
+    "prompt_id": "625_var_5",
+    "type": "llm_generated",
+    "sql": "SELECT c7.id, c7.post_id, c7.user_id, c7.created_at FROM users AS u1 INNER JOIN comments AS c7 ON u1.id = c7.user_id WHERE c7.post_id <= 836",
+    "prompt_text": "Could you grab me all the details for comments, you know, the comment's ID, which post it's on, who posted it, and the exact time it was created? But I only care about comments made on posts that have an ID of 836 or less.",
+    "perturbation_config": {
+      "semantic_completeness": "fully specified",
+      "lexical_precision": "colloquial",
+      "framing": "goal-oriented",
+      "structural_ordering": "stream of consciousness",
+      "noise": "none"
+    },
+    "llm_model": "gemini-2.5-flash"
+  }
+]

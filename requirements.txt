@@ -1,0 +1,4 @@
+sqlglot
+matplotlib
+python-dotenv
+google-genai

@@ -5,10 +5,10 @@ Loads social_media_queries.json, parses each SQL, renders vanilla + 3 variations
 
 import json
 from sqlglot import parse_one
-from nl_renderer import SQLToNLRenderer
+from src.core.nl_renderer import SQLToNLRenderer
 
 
-def generate_nl_prompts(input_file='social_media_queries.json', output_file='social_media_queries.json'):
+def generate_nl_prompts(input_file='social_media_queries.json', output_file='social_media_queries_verify.json'):
     """Generate NL prompts with variations for all SQL queries in the dataset."""
     
     # Load existing queries

@@ -1,6 +1,6 @@
 import random
 from sqlglot import exp
-from schema import SCHEMA, FOREIGN_KEYS, NUMERIC_TYPES, TEXT_TYPES, DATE_TYPES, BOOLEAN_TYPES
+from src.core.schema import SCHEMA, FOREIGN_KEYS, NUMERIC_TYPES, TEXT_TYPES, DATE_TYPES, BOOLEAN_TYPES
 
 class SQLQueryGenerator:
     def __init__(self, schema, foreign_keys):

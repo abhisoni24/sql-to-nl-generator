@@ -16,7 +16,7 @@ from datetime import datetime
 import sys
 
 # Import schema
-from schema import SCHEMA
+from src.core.schema import SCHEMA
 
 class SQLVerifier:
     """Verify functional accuracy of generated SQL against baseline."""
