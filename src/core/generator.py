@@ -196,6 +196,7 @@ class SQLQueryGenerator:
         complexity_types = ['simple', 'join', 'aggregate', 'advanced', 'insert', 'update', 'delete']
         dataset = []
         
+        global_id_counter = 1
         for complexity in complexity_types:
             print(f"Generating {num_per_complexity} queries for complexity: {complexity}")
             count = 0
@@ -204,11 +205,13 @@ class SQLQueryGenerator:
                     query_ast, comp = self.generate_query(complexity=complexity)
                     sql_string = query_ast.sql(dialect='mysql')
                     dataset.append({
+                        "id": global_id_counter,
                         "complexity": comp,
                         "sql": sql_string,
                         "tables": [t.name for t in query_ast.find_all(exp.Table)]
                     })
                     count += 1
+                    global_id_counter += 1
                 except Exception as e:
                      # print(f"Retry {complexity}: {e}")
                      pass

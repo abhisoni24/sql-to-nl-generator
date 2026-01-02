@@ -16,8 +16,8 @@ import threading
 
 # Constants
 # Constants
-INPUT_FILE = 'social_media_queries.json'
-OUTPUT_FILE = 'llm_generated_prompts_verify.json' # This constant is still used for the specific output file name
+INPUT_FILE = './dataset/current/nl_social_media_queries.json'
+OUTPUT_FILE = './dataset/current/perturbed_social_media_queries.json' # This constant is still used for the specific output file name
 SAMPLE_SIZE = 5  # Reduced for verification
 VARIANTS_PER_SAMPLE = 2  # Reduced for verification
 LLM_PROVIDER = 'gemini' 
