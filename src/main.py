@@ -16,7 +16,7 @@ def main():
             
     print(f"Successfully generated {len(output_data)} queries.")
     
-    output_file = 'raw_social_media_queries.json'
+    output_file = './dataset/current/raw_social_media_queries.json'
     with open(output_file, 'w') as f:
         json.dump(output_data, f, indent=2)
         

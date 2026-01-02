@@ -8,7 +8,7 @@ from sqlglot import parse_one
 from src.core.nl_renderer import SQLToNLRenderer
 
 
-def generate_nl_prompts(input_file='raw_social_media_queries.json', output_file='v2_social_media_queries.json'):
+def generate_nl_prompts(input_file='raw_social_media_queries.json', output_file='./dataset/current/nl_social_media_queries.json'):
     """Generate NL prompts with variations for all SQL queries in the dataset."""
     
     # Load existing queries

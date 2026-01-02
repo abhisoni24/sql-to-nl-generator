@@ -4,11 +4,11 @@ import os
 from collections import Counter
 
 def analyze_and_visualize():
-    if not os.path.exists('social_media_queries.json'):
-        print("Error: social_media_queries.json not found. Run main.py first.")
+    if not os.path.exists('./dataset/current/nl_social_media_queries.json'):
+        print("Error: ./dataset/current/nl_social_media_queries.json not found. Run main.py first.")
         return
 
-    with open('social_media_queries.json', 'r') as f:
+    with open('./dataset/current/nl_social_media_queries.json', 'r') as f:
         data = json.load(f)
     
     # Ensure visualizations directory exists
