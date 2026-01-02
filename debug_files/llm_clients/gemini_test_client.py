@@ -11,6 +11,7 @@ client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 model = "gemini-2.5-flash-lite"
 
+#for testing only passing this prompt
 nl_prompt = "Get c1.created_at from comments (as c1) where c1.user_id equals 180."
 
 cached_text = f'''
@@ -38,7 +39,7 @@ cache = client.caches.create(
           assistants. The perturbation details are provided in the task_info cache.'''
       ),
       contents=[cached_text],
-      ttl="1s",
+      ttl="3600s",
   )
 )
 
