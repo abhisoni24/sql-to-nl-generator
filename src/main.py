@@ -9,34 +9,18 @@ def main():
     generator = SQLQueryGenerator(SCHEMA, FOREIGN_KEYS)
     output_data = []
     
-    print("Generating 1000 queries...")
+    print("Generating queries...")
     
-    for i in range(1000):
-        try:
-            query_ast, complexity = generator.generate_query()
-            sql_string = query_ast.sql(dialect='mysql')
-            
-            # Basic metadata
-            entry = {
-                "id": i + 1,
-                "complexity": complexity,
-                "sql": sql_string,
-                "tables": [t.name for t in query_ast.find_all(exp.Table)]
-            }
-            output_data.append(entry)
-            
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
-            print(f"Error generating query {i+1}: {e}")
-            continue
+    # Generate 300 queries per complexity type
+    output_data = generator.generate_dataset(num_per_complexity=300)
             
     print(f"Successfully generated {len(output_data)} queries.")
     
-    with open('social_media_queries_verify.json', 'w') as f:
+    output_file = 'raw_social_media_queries.json'
+    with open(output_file, 'w') as f:
         json.dump(output_data, f, indent=2)
         
-    print("Saved to social_media_queries_verify.json")
+    print(f"Saved to {output_file}")
 
 if __name__ == "__main__":
     main()

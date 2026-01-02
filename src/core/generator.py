@@ -188,14 +188,42 @@ class SQLQueryGenerator:
         
         return target_table, target_alias, join_condition
 
-    def generate_query(self):
+    def generate_dataset(self, num_per_complexity=300):
+        """
+        Generates a fixed number of queries for each complexity type.
+        types: ['simple', 'join', 'aggregate', 'advanced', 'insert', 'update', 'delete']
+        """
+        complexity_types = ['simple', 'join', 'aggregate', 'advanced', 'insert', 'update', 'delete']
+        dataset = []
+        
+        for complexity in complexity_types:
+            print(f"Generating {num_per_complexity} queries for complexity: {complexity}")
+            count = 0
+            while count < num_per_complexity:
+                try:
+                    query_ast, comp = self.generate_query(complexity=complexity)
+                    sql_string = query_ast.sql(dialect='mysql')
+                    dataset.append({
+                        "complexity": comp,
+                        "sql": sql_string,
+                        "tables": [t.name for t in query_ast.find_all(exp.Table)]
+                    })
+                    count += 1
+                except Exception as e:
+                     # print(f"Retry {complexity}: {e}")
+                     pass
+        
+        return dataset
+
+    def generate_query(self, complexity=None):
         root_table = random.choice(list(self.schema.keys()))
         root_alias = f"{root_table[0]}1"
         
-        complexity = random.choices(
-            ['simple', 'join', 'aggregate', 'advanced', 'insert', 'update', 'delete'],
-            weights=[0.35, 0.25, 0.15, 0.05, 0.1, 0.05, 0.05]
-        )[0]
+        if complexity is None:
+            complexity = random.choices(
+                ['simple', 'join', 'aggregate', 'advanced', 'insert', 'update', 'delete'],
+                weights=[0.35, 0.25, 0.15, 0.05, 0.1, 0.05, 0.05]
+            )[0]
         
         if complexity == 'insert':
             return self.generate_insert(root_table), complexity
@@ -248,9 +276,8 @@ class SQLQueryGenerator:
                     where = self.generate_where(target_table, alias=target_alias)
                     if where: query = query.where(where)
             else:
-                # Fallback to simple if no join possible
-                selects = self.generate_select(root_table, alias=root_alias)
-                for s in selects: query = query.select(s, copy=False)
+                # If we requested a join but cannot join, this is an error for generation
+                raise ValueError("Could not find a valid foreign key for join.")
 
         elif complexity == 'aggregate':
             # Group by 1 column
@@ -294,7 +321,7 @@ class SQLQueryGenerator:
                     query = query.where(exp.In(this=exp.column(left_key, table=root_alias), expressions=[subquery]))
                 else:
                      # Fallback
-                     query = query.where(self.generate_where(root_table, alias=root_alias))
+                     raise ValueError("Could not find candidates for subquery_where")
 
             elif subtype == 'subquery_from':
                 # Subquery in FROM: FROM (SELECT ...) AS sub

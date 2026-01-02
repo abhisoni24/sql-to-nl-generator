@@ -8,7 +8,7 @@ import random
 from datetime import datetime
 from typing import List, Dict, Any
 import os
-from src.llm.llm_client import get_llm_client
+from src.llm import get_llm_client
 
 
 def load_random_samples(json_file: str, num_samples: int = 10) -> List[Dict[str, Any]]:

@@ -8,7 +8,7 @@ import random
 import os
 import time
 from typing import Dict, List, Any
-from src.llm.llm_client import get_llm_client
+from src.llm import get_llm_client
 from src.core.schema import SCHEMA
 
 import concurrent.futures

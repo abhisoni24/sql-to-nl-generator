@@ -1,0 +1,19 @@
+# Experiment Configuration
+models:
+  - name: gemini-pro
+    adapter_type: gemini
+    model_identifier: gemini-2.0-flash-exp
+    decoding_overrides: {}
+    
+  # - name: gpt-4
+  #   adapter_type: openai
+  #   model_identifier: gpt-4o
+    
+  # - name: claude-3-5
+  #   adapter_type: anthropic
+  #   model_identifier: claude-3-5-sonnet-20241022
+    
+  # - name: local-mistral
+  #   adapter_type: vllm
+  #   model_identifier: mistralai/Mistral-7B-v0.1
+  #   hardware_notes: "A100 40GB"
