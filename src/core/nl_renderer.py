@@ -3,144 +3,114 @@ Syntax-Directed Translation (SDT) Framework for SQL to Natural Language
 This module provides deterministic, template-based rendering of SQL ASTs to NL prompts.
 """
 
+from enum import Enum, auto
+from dataclasses import dataclass, field
+import random
+from typing import List, Dict, Optional, Set
 from sqlglot import exp
 
+class PerturbationType(Enum):
+    """
+    Enumeration of the 10 specific perturbation categories.
+    """
+    UNDER_SPECIFICATION = "under_specification"
+    IMPLICIT_BUSINESS_LOGIC = "implicit_business_logic"
+    SYNONYM_SUBSTITUTION = "synonym_substitution"
+    INCOMPLETE_JOINS = "incomplete_joins"
+    RELATIVE_TEMPORAL = "relative_temporal"
+    AMBIGUOUS_PRONOUNS = "ambiguous_pronouns"
+    VAGUE_AGGREGATION = "vague_aggregation"
+    COLUMN_VARIATIONS = "column_variations"
+    MISSING_WHERE_DETAILS = "missing_where_details"
+    TYPOS = "typos"
+
+@dataclass
+class PerturbationConfig:
+    """
+    Configuration for perturbations (The 'Bit-Vector').
+    Controls which perturbations are active and provides the seed for determinism.
+    """
+    active_perturbations: Set[PerturbationType] = field(default_factory=set)
+    seed: int = 42
+
+    def is_active(self, p_type: PerturbationType) -> bool:
+        return p_type in self.active_perturbations
 
 class SQLToNLRenderer:
     """Renders SQL AST nodes to natural language using deterministic templates."""
     
-    def __init__(
-        self,
-        use_variations=True,
-        verbosity='normal',
-        operator_style='mixed',
-        add_fluff=False,
-        code_switch_probability=0.0
-    ):
+    def __init__(self, config: Optional[PerturbationConfig] = None):
         """
-        Initialize renderer with perturbation settings.
+        Initialize renderer with perturbation configuration.
         
         Args:
-            use_variations: Enable lexical variation and aggregate variety
-            verbosity: 'terse', 'normal', or 'verbose'
-            operator_style: 'words', 'symbols', or 'mixed'
-            add_fluff: Add conversational prefixes/suffixes
-            code_switch_probability: Probability (0.0-1.0) of using SQL keywords
+            config: PerturbationConfig object controlling active perturbations and seed.
         """
-        self.use_variations = use_variations
-        self.verbosity = verbosity
-        self.operator_style = operator_style
-        self.add_fluff = add_fluff
-        self.code_switch_prob = code_switch_probability
+        self.config = config or PerturbationConfig()
         
-        # Synonym mappings for lexical variation
+        # Synonym mappings for lexical variation (SYNONYM_SUBSTITUTION)
         self.synonyms = {
-            'get': ['Get', 'Retrieve', 'Fetch', 'Select', 'Show', 'Find', 'Pull'],
-            'where': ['where', 'filtering by', 'with condition', 'such that', 'that match'],
-            'from': ['from', 'in', 'within', 'from table'],
-            'grouped by': ['grouped by', 'group by', 'organized by', 'categorized by', 'partitioned by'],
-            'ordered by': ['ordered by', 'sorted by', 'arranged by', 'organized by'],
-            'limited to': ['limited to', 'with limit of', 'taking only', 'restricted to', 'top'],
-            'having': ['having', 'with condition', 'where aggregate', 'filtered by'],
-            'joined with': ['joined with', 'join', 'combined with', 'merged with'],
-            'equals': ['equals', 'is', 'matches', '='],
-            'not equals': ['not equals', 'is not', 'differs from', '!=', '<>'],
-            'greater than': ['greater than', 'more than', 'exceeds', 'above', '>'],
-            'less than': ['less than', 'below', 'under', 'fewer than', '<'],
-            'greater than or equal to': ['greater than or equal to', 'at least', '>=', 'no less than'],
-            'less than or equal to': ['less than or equal to', 'at most', '<=', 'no more than'],
-            'like': ['like', 'matching pattern', 'similar to', 'matches'],
-            'in': ['in', 'within', 'among', 'one of'],
+            'get': ['Get', 'Retrieve', 'Fetch', 'Select', 'Show', 'Find', 'Pull', 'Extract', 'Obtain', 'Display'],
+            'where': ['where', 'filtering by', 'with condition', 'such that', 'that match', 'when', 'having condition'],
+            'from': ['from', 'in', 'within', 'from table', 'out of', 'using'],
+            'grouped by': ['grouped by', 'group by', 'organized by', 'categorized by', 'partitioned by', 'arranged by', 'split by'],
+            'ordered by': ['ordered by', 'sorted by', 'arranged by', 'organized by', 'ranked by', 'sequenced by'],
+            'limited to': ['limited to', 'with limit of', 'taking only', 'restricted to', 'top', 'capped at', 'max'],
+            'having': ['having', 'with condition', 'where aggregate', 'filtered by', 'with filter'],
+            'joined with': ['joined with', 'join', 'combined with', 'merged with', 'linked to', 'connected to'],
+            'equals': ['equals', 'is', 'matches', '=', 'is equal to'],
+            'not equals': ['not equals', 'is not', 'differs from', '!=', '<>', 'does not equal'],
+            'greater than': ['greater than', 'more than', 'exceeds', 'above', '>', 'larger than'],
+            'less than': ['less than', 'below', 'under', 'fewer than', '<', 'smaller than'],
+            'greater than or equal to': ['greater than or equal to', 'at least', '>=', 'no less than', 'minimum of'],
+            'less than or equal to': ['less than or equal to', 'at most', '<=', 'no more than', 'maximum of'],
+            'like': ['like', 'matching pattern', 'similar to', 'matches', 'containing', 'with pattern'],
+            'in': ['in', 'within', 'among', 'one of', 'part of', 'included in'],
         }
         
         # Aggregate description variations
         self.agg_variations = {
-            'count': ['count of', 'number of', 'how many', 'total count of', 'tally of'],
-            'sum': ['sum of', 'total', 'add up', 'combined', 'total of'],
-            'avg': ['average of', 'mean', 'avg', 'average value of', 'mean value of'],
-            'min': ['minimum of', 'smallest', 'lowest', 'min', 'minimum value of'],
-            'max': ['maximum of', 'largest', 'highest', 'max', 'maximum value of']
+            'count': ['count of', 'number of', 'how many', 'total count of', 'tally of', 'quantity of'],
+            'sum': ['sum of', 'total', 'add up', 'combined', 'total of', 'aggregate of'],
+            'avg': ['average of', 'mean', 'avg', 'average value of', 'mean value of', 'typical'],
+            'min': ['minimum of', 'smallest', 'lowest', 'min', 'minimum value of', 'least'],
+            'max': ['maximum of', 'largest', 'highest', 'max', 'maximum value of', 'greatest']
         }
         
-        # Contextual fluff for conversational style
-        self.fluff_prefixes = [
-            "I need to", "Please", "Can you", "Let's", 
-            "I want to", "Show me how to", "Help me",
-            "Could you", "I'd like to", ""
-        ]
-        
-        self.fluff_suffixes = [
-            "please", "thanks", "for me", "if possible",
-            "when you get a chance", ""
-        ]
-        
-        # SQL keyword mappings for code-switching
-        self.sql_keyword_map = {
-            'get': 'SELECT',
-            'where': 'WHERE',
-            'from': 'FROM',
-            'grouped by': 'GROUP BY',
-            'ordered by': 'ORDER BY',
-            'limited to': 'LIMIT',
-            'having': 'HAVING',
-            'joined with': 'JOIN',
-            'left joined with': 'LEFT JOIN',
-            'right joined with': 'RIGHT JOIN',
+        # Pronoun maps (AMBIGUOUS_PRONOUNS)
+        self.pronouns = {
+            'table': ['it', 'that table', 'them', 'those'],
+            'column': ['that field', 'it', 'the column', 'that value'],
+            'id': ['that one', 'it', 'that ID', 'the specified one']
         }
-    
-    def _choose_word(self, canonical_form):
-        """Select a synonym based on variation mode."""
-        import random
-        if not self.use_variations:
-            # Return default (first option for most, or canonical for operators)
+
+        # Typo patterns (TYPOS)
+        # Deterministic typo injection
+        self.typo_patterns = {
+            'swap': lambda w, rng: w if len(w) < 2 else w[:max(0, rng.randint(0, len(w)-2))] + w[min(len(w)-1, rng.randint(0, len(w)-2) + 1)] + w[min(len(w)-1, rng.randint(0, len(w)-2))] + w[min(len(w), rng.randint(0, len(w)-2) + 2):],
+            'miss': lambda w, rng: w if len(w) < 3 else w[:rng.randint(0, len(w)-1)] + w[rng.randint(0, len(w)-1)+1:],
+        }
+
+    def _get_rng(self, extra_seed: str = "") -> random.Random:
+        """Get a deterministic RNG based on config seed and context."""
+        seed_str = f"{self.config.seed}_{extra_seed}"
+        return random.Random(seed_str)
+
+    def _choose_word(self, canonical_form: str, context_seed: str) -> str:
+        """Select a synonym based on variation mode. Deterministic."""
+        if not self.config.is_active(PerturbationType.SYNONYM_SUBSTITUTION):
+            # Return default (first option for most)
             options = self.synonyms.get(canonical_form, [canonical_form])
             return options[0] if options else canonical_form
-        return random.choice(self.synonyms.get(canonical_form, [canonical_form]))
-    
-    def _choose_agg_variant(self, agg_type):
-        """Choose variation for aggregate description."""
-        import random
-        if not self.use_variations:
-            return self.agg_variations[agg_type][0]
-        return random.choice(self.agg_variations.get(agg_type, ['aggregate']))
-    
-    def _format_operator(self, op_type):
-        """Get operator representation based on style."""
-        import random
-        operator_maps = {
-            'words': {
-                'eq': 'equals', 'neq': 'not equals',
-                'gt': 'greater than', 'gte': 'greater than or equal to',
-                'lt': 'less than', 'lte': 'less than or equal to',
-                'like': 'like', 'in': 'in'
-            },
-            'symbols': {
-                'eq': '=', 'neq': '!=',
-                'gt': '>', 'gte': '>=',
-                'lt': '<', 'lte': '<=',
-                'like': 'LIKE', 'in': 'IN'
-            }
-        }
         
-        if self.operator_style == 'mixed':
-            style = random.choice(['words', 'symbols'])
-        else:
-            style = self.operator_style
-        
-        return operator_maps[style].get(op_type, op_type)
-    
-    def _maybe_sql_keyword(self, nl_word):
-        """Randomly decide to use SQL keyword instead of NL."""
-        import random
-        if self.code_switch_prob > 0 and random.random() < self.code_switch_prob:
-            return self.sql_keyword_map.get(nl_word, nl_word)
-        return nl_word
-    
-    def render(self, ast):
-        """Main entry point: render any SQL statement to NL."""
-        import random
-        
-        # Generate base NL
+        rng = self._get_rng(f"synonym_{canonical_form}_{context_seed}")
+        return rng.choice(self.synonyms.get(canonical_form, [canonical_form]))
+
+    def render(self, ast) -> str:
+        """
+        Main entry point: render any SQL statement to NL.
+        The process is deterministic based on self.config.seed.
+        """
         if isinstance(ast, exp.Select):
             base_nl = self.render_select(ast)
         elif isinstance(ast, exp.Insert):
@@ -152,23 +122,73 @@ class SQLToNLRenderer:
         else:
             base_nl = f"Execute statement: {ast.sql()}"
         
-        # Apply fluff if enabled
-        if self.add_fluff and random.random() < 0.7:  # 70% chance to add fluff
-            prefix = random.choice(self.fluff_prefixes)
-            suffix = random.choice(self.fluff_suffixes)
-            
-            if prefix:
-                # Adjust capitalization: "I need to get users" not "I need to Get users"
-                base_nl = base_nl[0].lower() + base_nl[1:] if base_nl else base_nl
-                base_nl = f"{prefix} {base_nl}"
-            
-            if suffix:
-                # Remove trailing period before adding suffix
-                base_nl = base_nl.rstrip('.')
-                base_nl = f"{base_nl} {suffix}."
-        
+        # TYPOS: Applied at the end
+        if self.config.is_active(PerturbationType.TYPOS):
+            base_nl = self._apply_typos(base_nl)
+
         return base_nl
-    
+
+    # For later
+    # Need to replace this with collecting the valid perturbations for the current nl_prompt and make a hybrid prompt
+    def render_randomly(self, ast, seed=None) -> str:
+        """
+        Render the AST with random valid perturbation settings.
+        Used for generating 'nl_prompt_variations' payload.
+        """
+        # Pick 1-3 random perturbations
+        rng = random.Random(seed)
+        all_types = list(PerturbationType)
+        # Select a random subset
+        num_active = rng.randint(0, 3) 
+        active = set(rng.sample(all_types, num_active))
+        
+        # Create temp config
+        temp_config = PerturbationConfig(active_perturbations=active, seed=rng.randint(0, 10000))
+        temp_renderer = SQLToNLRenderer(temp_config)
+        return temp_renderer.render(ast)
+
+    def is_applicable(self, ast: exp.Expression, p_type: PerturbationType) -> bool:
+        """
+        Check if a specifically perturbation type is applicable to the given AST.
+        """
+        if p_type == PerturbationType.TYPOS:
+            return True
+        elif p_type == PerturbationType.SYNONYM_SUBSTITUTION:
+            return True
+        elif p_type == PerturbationType.UNDER_SPECIFICATION:
+            # Applicable if there are tables or columns
+            return bool(list(ast.find_all(exp.Table)) or list(ast.find_all(exp.Column)))
+        elif p_type == PerturbationType.IMPLICIT_BUSINESS_LOGIC:
+            # Applicable if there is a WHERE clause
+            return bool(ast.find(exp.Where))
+        elif p_type == PerturbationType.INCOMPLETE_JOINS:
+            # Applicable if there are JOINs
+            return bool(ast.find(exp.Join))
+        elif p_type == PerturbationType.RELATIVE_TEMPORAL:
+            # Applicable if there are date/time literals or types (simplified check)
+            # Check for date literals or known functions
+            # This is a heuristic.
+            for node in ast.walk():
+                if isinstance(node, exp.Literal) and isinstance(node.this, str):
+                    if '-' in node.this and any(c.isdigit() for c in node.this): # Weak date check
+                        return True
+                if isinstance(node, (exp.CurrentDate, exp.CurrentTime, exp.CurrentTimestamp, exp.DateSub, exp.DateAdd)):
+                    return True
+            return False
+        elif p_type == PerturbationType.AMBIGUOUS_PRONOUNS:
+            return bool(list(ast.find_all(exp.Table)) or list(ast.find_all(exp.Column)))
+        elif p_type == PerturbationType.VAGUE_AGGREGATION:
+            # Applicable if there are aggregates or GROUP BY
+            if ast.find(exp.Group): return True
+            if any(isinstance(n, (exp.Count, exp.Sum, exp.Avg, exp.Min, exp.Max)) for n in ast.walk()): return True
+            return False
+        elif p_type == PerturbationType.COLUMN_VARIATIONS:
+            return bool(list(ast.find_all(exp.Column)))
+        elif p_type == PerturbationType.MISSING_WHERE_DETAILS:
+             return bool(ast.find(exp.Where))
+             
+        return True
+
     # ========== SELECT Statement ==========
     
     def render_select(self, node):
@@ -208,524 +228,507 @@ class SQLToNLRenderer:
         limit_clause = self._render_limit_clause(node)
         if limit_clause:
             parts.append(limit_clause)
-        
-        return " ".join(parts) + "."
+            
+        full_sentence = " ".join(parts)
+        if not full_sentence.endswith('.'):
+            full_sentence += "."
+            
+        return full_sentence
     
     def _render_select_clause(self, node):
         """Render SELECT column list."""
         expressions = node.expressions
+        get_word = self._choose_word('get', 'select_clause_verb')
+        
         if not expressions:
-            get_word = self._maybe_sql_keyword('get')
-            get_word = self._choose_word(get_word if get_word != 'SELECT' else 'get')
             return f"{get_word} all columns"
         
         col_descriptions = []
-        for expr in expressions:
+        for i, expr in enumerate(expressions):
             if isinstance(expr, exp.Star):
                 col_descriptions.append("all columns")
-            elif isinstance(expr, exp.Alias):
-                # Aggregates or aliased expressions
-                inner = expr.this
-                if isinstance(inner, (exp.Count, exp.Sum, exp.Avg, exp.Min, exp.Max)):
-                    col_descriptions.append(self._render_aggregate(inner))
-                else:
-                    col_descriptions.append(self._render_expression(inner))
             elif isinstance(expr, (exp.Count, exp.Sum, exp.Avg, exp.Min, exp.Max)):
-                # Aggregates without alias
-                col_descriptions.append(self._render_aggregate(expr))
+                col_descriptions.append(self._render_aggregate(expr, f"expr_{i}"))
             else:
-                col_descriptions.append(self._render_expression(expr))
+                col_descriptions.append(self._render_expression(expr, f"expr_{i}"))
         
-        # Apply variations to "Get" keyword
-        get_word = self._maybe_sql_keyword('get')
-        if get_word == 'SELECT':
-            select_word = 'SELECT'
-        else:
-            select_word = self._choose_word('get')
-        
-        # Apply verbosity
-        if self.verbosity == 'terse':
-            return f"{select_word} {', '.join(col_descriptions)}"
-        elif self.verbosity == 'verbose':
-            if len(col_descriptions) == 1:
-                return f"I need to retrieve the following column: {col_descriptions[0]}"
-            else:
-                return f"I need to retrieve the following columns: {', '.join(col_descriptions)}"
-        else:  # normal
-            if len(col_descriptions) == 1:
-                return f"{select_word} {col_descriptions[0]}"
-            else:
-                return f"{select_word} {', '.join(col_descriptions)}"
+        return f"{get_word} {', '.join(col_descriptions)}"
     
     def _render_from_clause(self, node):
-        """Render FROM clause with tables and joins."""
-        from_node = node.args.get('from_')  # Note: key is 'from_' not 'from'
+        """Render FROM clause."""
+        from_node = node.args.get('from_')
         if not from_node:
             return None
-        
-        # Get base table
+            
         table_expr = from_node.this
-        table_name = self._render_table(table_expr)
+        table_name = self._render_table(table_expr, "from_table")
         
-        # Apply variations to "from" keyword
-        from_word = self._maybe_sql_keyword('from')
-        if from_word == 'FROM':
-            from_word = 'FROM'
-        else:
-            from_word = self._choose_word('from')
+        from_word = self._choose_word('from', 'from_clause')
+        parts = [f"{from_word} {table_name}"]
         
-        # Apply verbosity
-        if self.verbosity == 'verbose':
-            parts = [f"from the table named {table_name}"]
-        else:
-            parts = [f"{from_word} {table_name}"]
-        
-        # Add joins
         joins = node.args.get('joins', [])
-        for join in joins:
-            parts.append(self._render_join(join))
-        
+        for i, join in enumerate(joins):
+             parts.append(self._render_join(join, f"join_{i}"))
+             
         return " ".join(parts)
-    
+
     def _render_where_clause(self, node):
         """Render WHERE clause."""
         where_node = node.args.get('where')
         if not where_node:
             return None
-        
-        condition = self._render_expression(where_node.this)
-        
-        # Apply variations to "where" keyword
-        where_word = self._maybe_sql_keyword('where')
-        if where_word == 'WHERE':
-            where_word = 'WHERE'
-        else:
-            where_word = self._choose_word('where')
-        
-        # Apply verbosity
-        if self.verbosity == 'terse':
-            return f"{where_word} {condition}"
-        elif self.verbosity == 'verbose':
-            return f"specifically filtering for records where the condition is: {condition}"
-        else:  # normal
-            return f"{where_word} {condition}"
-    
+            
+        condition = self._render_expression(where_node.this, "where_condition")
+        where_word = self._choose_word('where', 'where_clause')
+        return f"{where_word} {condition}"
+
     def _render_group_by_clause(self, node):
-        """Render GROUP BY clause."""
         group = node.args.get('group')
         if not group:
             return None
         
         expressions = group.expressions if hasattr(group, 'expressions') else [group]
-        cols = [self._render_expression(expr) for expr in expressions]
+        cols = [self._render_expression(expr, f"group_{i}") for i, expr in enumerate(expressions)]
         
-        # Apply variations
-        grouped_word = self._maybe_sql_keyword('grouped by')
-        if grouped_word == 'GROUP BY':
-            grouped_phrase = 'GROUP BY'
-        else:
-            grouped_phrase = self._choose_word('grouped by')
+        grouped_word = self._choose_word('grouped by', 'group_clause')
         
-        if len(cols) == 1:
-            return f"{grouped_phrase} {cols[0]}"
-        else:
-            return f"{grouped_phrase} {', '.join(cols)}"
-    
+        # VAGUE_AGGREGATION: "Replace GROUP BY with 'by', 'for each', 'per'"
+        if self.config.is_active(PerturbationType.VAGUE_AGGREGATION):
+           rng = self._get_rng("vague_group")
+           grouped_word = rng.choice(['by', 'for each', 'per'])
+
+        return f"{grouped_word} {', '.join(cols)}"
+
     def _render_having_clause(self, node):
-        """Render HAVING clause."""
         having = node.args.get('having')
         if not having:
             return None
-        
-        condition = self._render_expression(having.this)
-        
-        # Apply variations
-        having_word = self._maybe_sql_keyword('having')
-        if having_word == 'HAVING':
-            having_phrase = 'HAVING'
-        else:
-            having_phrase = self._choose_word('having')
-        
-        return f"{having_phrase} {condition}"
-    
+        condition = self._render_expression(having.this, "having_condition")
+        having_word = self._choose_word('having', 'having_clause')
+        return f"{having_word} {condition}"
+
     def _render_order_by_clause(self, node):
-        """Render ORDER BY clause."""
         order = node.args.get('order')
         if not order:
             return None
-        
+            
         expressions = order.expressions if hasattr(order, 'expressions') else [order]
         order_parts = []
-        for expr in expressions:
+        for i, expr in enumerate(expressions):
             if isinstance(expr, exp.Ordered):
-                col = self._render_expression(expr.this)
+                col = self._render_expression(expr.this, f"order_{i}")
                 desc = expr.args.get('desc', False)
                 direction = "descending" if desc else "ascending"
                 order_parts.append(f"{col} {direction}")
             else:
-                order_parts.append(self._render_expression(expr))
-        
-        # Apply variations
-        ordered_word = self._maybe_sql_keyword('ordered by')
-        if ordered_word == 'ORDER BY':
-            ordered_phrase = 'ORDER BY'
-        else:
-            ordered_phrase = self._choose_word('ordered by')
-        
-        return f"{ordered_phrase} {', '.join(order_parts)}"
-    
+                order_parts.append(self._render_expression(expr, f"order_{i}"))
+                
+        ordered_word = self._choose_word('ordered by', 'order_clause')
+        return f"{ordered_word} {', '.join(order_parts)}"
+
     def _render_limit_clause(self, node):
-        """Render LIMIT clause."""
         limit = node.args.get('limit')
         if not limit:
             return None
-        
-        # LIMIT can be an Expression wrapping the actual value
+            
         if isinstance(limit, exp.Limit):
-            limit_val = self._render_expression(limit.expression)
+            limit_val = self._render_expression(limit.expression, "limit_val")
         else:
-            limit_val = self._render_expression(limit)
+            limit_val = self._render_expression(limit, "limit_val")
+            
+        limited_word = self._choose_word('limited to', 'limit_clause')
+        return f"{limited_word} {limit_val} results"
+
+    # ========== Expression Rendering (The meat of perturbations) ==========
+
+    def _render_table(self, table_expr, seed_context):
+        """Render table reference with perturbations."""
+        rng = self._get_rng(seed_context)
         
-        # Apply variations
-        limited_word = self._maybe_sql_keyword('limited to')
-        if limited_word == 'LIMIT':
-            return f"LIMIT {limit_val}"
-        else:
-            limited_phrase = self._choose_word('limited to')
-            return f"{limited_phrase} {limit_val} results"
-    
-    # ========== INSERT Statement ==========
-    
-    def render_insert(self, node):
-        """Render INSERT statement."""
-        # node.this is an exp.Schema object for INSERT
-        # We need to extract the table name from it
-        schema_node = node.this
-        if isinstance(schema_node, exp.Schema):
-            # The table appears as the first expression in the schema
-            if schema_node.this:
-                table = self._render_expression(schema_node.this)
-            else:
-                table = "table"
-        else:
-            table = self._render_table(schema_node)
+        name = "table"
+        alias = ""
         
-        # Get columns
-        cols = node.args.get('columns', [])
-        if cols:
-            col_names = [self._render_expression(c) for c in cols]
-            col_str = f" ({', '.join(col_names)})"
-        else:
-            col_str = ""
-        
-        # Get values
-        expression = node.expression
-        if isinstance(expression, exp.Values):
-            value_tuples = expression.expressions
-            if value_tuples:
-                first_tuple = value_tuples[0]
-                if isinstance(first_tuple, exp.Tuple):
-                    values = [self._render_expression(v) for v in first_tuple.expressions]
-                    value_str = f"values ({', '.join(values)})"
-                else:
-                    value_str = "values"
-            else:
-                value_str = "values"
-        else:
-            value_str = "values from expression"
-        
-        return f"Insert into {table}{col_str} the {value_str}."
-    
-    # ========== UPDATE Statement ==========
-    
-    def render_update(self, node):
-        """Render UPDATE statement."""
-        table = self._render_table(node.this)
-        
-        # Get SET assignments
-        expressions = node.expressions
-        assignments = []
-        for expr in expressions:
-            if isinstance(expr, exp.EQ):
-                col = self._render_expression(expr.this)
-                val = self._render_expression(expr.expression)
-                assignments.append(f"{col} to {val}")
-        
-        assignment_str = ", ".join(assignments) if assignments else "columns"
-        
-        # Get WHERE clause
-        where = node.args.get('where')
-        if where:
-            condition = self._render_expression(where.this)
-            where_str = f" where {condition}"
-        else:
-            where_str = ""
-        
-        return f"Update {table} setting {assignment_str}{where_str}."
-    
-    # ========== DELETE Statement ==========
-    
-    def render_delete(self, node):
-        """Render DELETE statement."""
-        table = self._render_table(node.this)
-        
-        # Get WHERE clause
-        where = node.args.get('where')
-        if where:
-            condition = self._render_expression(where.this)
-            where_str = f" where {condition}"
-        else:
-            where_str = ""
-        
-        return f"Delete from {table}{where_str}."
-    
-    # ========== Helper Methods ==========
-    
-    def _render_table(self, table_expr):
-        """Render table reference."""
         if isinstance(table_expr, exp.Table):
             name = table_expr.name
             alias = table_expr.alias
-            if alias:
-                return f"{name} (as {alias})"
-            return name
-        elif isinstance(table_expr, exp.Subquery):
-            # Recursively render the inner query
-            inner_query = table_expr.this
-            if isinstance(inner_query, exp.Select):
-                inner_nl = self.render_select(inner_query)
-                # Remove trailing period from inner query
-                inner_nl = inner_nl.rstrip('.')
-                alias = table_expr.alias
-                if alias:
-                    return f"subquery (as {alias}) that: {inner_nl}"
-                return f"subquery that: {inner_nl}"
-            else:
-                alias = table_expr.alias
-                return f"subquery{f' (as {alias})' if alias else ''}"
         elif isinstance(table_expr, exp.Identifier):
-            return str(table_expr.this)
+            name = str(table_expr.this)
         elif isinstance(table_expr, str):
-            return table_expr
+            name = table_expr
+            
+        # UNDER_SPECIFICATION
+        if self.config.is_active(PerturbationType.UNDER_SPECIFICATION):
+             if isinstance(table_expr, (exp.Table, exp.Identifier, str)):
+                 return "the appropriate table"
+
+        # AMBIGUOUS_PRONOUNS
+        if self.config.is_active(PerturbationType.AMBIGUOUS_PRONOUNS):
+            return rng.choice(self.pronouns['table'])
+            
+        res = name
+        if alias and not self.config.is_active(PerturbationType.UNDER_SPECIFICATION): 
+            res += f" (as {alias})"
+        
+        return res
+
+    def _render_column(self, col_expr, seed_context):
+        """Render column reference with perturbations."""
+        rng = self._get_rng(seed_context)
+        
+        if isinstance(col_expr, exp.Column):
+            name = col_expr.name
+            table = col_expr.table
         else:
-            # Fallback: try to extract table name from AST
-            if hasattr(table_expr, 'name'):
-                return table_expr.name
-            return "table"
-    
-    def _render_join(self, join_node):
-        """Render JOIN clause."""
-        # Get join type
+            name = str(col_expr) # fallback
+            table = None
+            
+        # UNDER_SPECIFICATION
+        if self.config.is_active(PerturbationType.UNDER_SPECIFICATION):
+            table = None
+            
+        # COLUMN_VARIATIONS
+        if self.config.is_active(PerturbationType.COLUMN_VARIATIONS):
+            # "Convert snake_case to camelCase" with proper spacing
+            if "_" in name:
+                parts = name.split('_')
+                if rng.choice([True, False]):
+                    name = parts[0] + ''.join(x.title() for x in parts[1:])
+                # Don't introduce spacing errors - remove the "name = ' '.join(parts)" option
+        
+        # AMBIGUOUS_PRONOUNS - Only in WHERE/HAVING clauses, never in SELECT list
+        if self.config.is_active(PerturbationType.AMBIGUOUS_PRONOUNS):
+            # Only apply in WHERE/HAVING contexts, not in SELECT/GROUP/ORDER
+            if any(ctx in seed_context.lower() for ctx in ['where', 'having']) and rng.random() < 0.4:
+                return rng.choice(self.pronouns['column'])
+            
+        if table:
+            return f"{table}.{name}"
+        return name
+
+    def _render_expression(self, expr, seed_context):
+        """Render generic expression with recursive perturbations."""
+        
+        if isinstance(expr, exp.Column):
+            return self._render_column(expr, seed_context)
+            
+        elif isinstance(expr, exp.Literal):
+            val = str(expr.this)
+            # RELATIVE_TEMPORAL check
+            if self.config.is_active(PerturbationType.RELATIVE_TEMPORAL):
+                # Heuristic: simplistic date check
+                if len(val) >= 10 and val[0:4].isdigit() and '-' in val:
+                    rng = self._get_rng(seed_context + "_temporal")
+                    return rng.choice(["recently", "last month", "yesterday", "this week"])
+            
+            # AMBIGUOUS_PRONOUNS for values - only in WHERE contexts
+            if self.config.is_active(PerturbationType.AMBIGUOUS_PRONOUNS):
+                 if val.isdigit() and 'where' in seed_context.lower():
+                     rng = self._get_rng(seed_context + "_ambig_val")
+                     if rng.random() < 0.3:
+                         return rng.choice(self.pronouns['id'])
+
+            return val
+            
+        elif isinstance(expr, exp.Boolean):
+             return str(expr.this).upper()
+
+        elif isinstance(expr, (exp.Count, exp.Sum, exp.Avg, exp.Min, exp.Max)):
+            return self._render_aggregate(expr, seed_context)
+
+        elif isinstance(expr, (exp.EQ, exp.NEQ, exp.GT, exp.GTE, exp.LT, exp.LTE, exp.Like)):
+             return self._render_binary_op(expr, seed_context)
+
+        elif isinstance(expr, exp.In):
+             left = self._render_expression(expr.this, seed_context + "_left")
+             
+             # Check for subquery in 'query' field (IN with SELECT)
+             subquery = expr.args.get('query')
+             if subquery and isinstance(subquery, exp.Subquery):
+                 # Render the subquery SELECT statement
+                 inner_select = subquery.this
+                 if isinstance(inner_select, exp.Select):
+                     inner = self.render_select(inner_select)
+                     inner = inner.rstrip('.')
+                     return f"{left} in ({inner})"
+                 else:
+                     # Fallback if not a Select
+                     return f"{left} in (subquery)"
+             
+             # Handle IN list (multiple values)
+             right_exprs = expr.expressions if hasattr(expr, 'expressions') else []
+             if right_exprs:
+                 vals = [self._render_expression(v, seed_context + f"_in_{i}") for i,v in enumerate(right_exprs)]
+                 return f"{left} in ({', '.join(vals)})"
+             
+             # Empty IN clause (shouldn't happen but handle gracefully)
+             return f"{left} in ()"
+        
+        # Function calls (DATE_SUB, NOW, etc.)
+        elif isinstance(expr, exp.Anonymous):
+            func_name = expr.this if isinstance(expr.this, str) else str(expr.this)
+            args = expr.expressions if hasattr(expr, 'expressions') else []
+            arg_strs = [self._render_expression(a, f"{seed_context}_arg_{i}") for i, a in enumerate(args)]
+            return f"{func_name}({', '.join(arg_strs)})"
+        
+        elif isinstance(expr, (exp.CurrentDate, exp.CurrentTime, exp.CurrentTimestamp)):
+            return "NOW()"
+        
+        elif isinstance(expr, exp.DateSub):
+            # DATE_SUB(date, INTERVAL n unit)
+            date_expr = self._render_expression(expr.this, seed_context + "_date")
+            interval = expr.expression
+            if isinstance(interval, exp.Interval):
+                unit = interval.unit.this if hasattr(interval.unit, 'this') else str(interval.unit)
+                value = self._render_expression(interval.this, seed_context + "_interval_val")
+                return f"{date_expr} minus {value} {unit.lower()}s"
+            return f"date subtraction from {date_expr}"
+        
+        elif isinstance(expr, exp.DateAdd):
+            date_expr = self._render_expression(expr.this, seed_context + "_date")
+            interval = expr.expression
+            if isinstance(interval, exp.Interval):
+                unit = interval.unit.this if hasattr(interval.unit, 'this') else str(interval.unit)
+                value = self._render_expression(interval.this, seed_context + "_interval_val")
+                return f"{date_expr} plus {value} {unit.lower()}s"
+            return f"date addition to {date_expr}"
+        
+        elif isinstance(expr, exp.Interval):
+            value = self._render_expression(expr.this, seed_context + "_val")
+            unit = expr.unit.this if hasattr(expr.unit, 'this') else str(expr.unit)
+            return f"{value} {unit.lower()}s"
+
+        return "expression"
+
+    def _render_binary_op(self, expr, seed_context):
+        left = self._render_expression(expr.this, seed_context + "_left")
+        right = self._render_expression(expr.expression, seed_context + "_right")
+        
+        op_map = {
+            exp.EQ: 'equals', exp.NEQ: 'not equals', 
+            exp.GT: 'greater than', exp.GTE: 'greater than or equal to',
+            exp.LT: 'less than', exp.LTE: 'less than or equal to',
+            exp.Like: 'like'
+        }
+        op_canonical = op_map.get(type(expr), 'op')
+        
+        # IMPLICIT_BUSINESS_LOGIC - ONLY apply in WHERE clauses, not JOINs
+        if self.config.is_active(PerturbationType.IMPLICIT_BUSINESS_LOGIC):
+             if 'where' in seed_context.lower() and 'join' not in seed_context.lower():
+                 rng = self._get_rng(seed_context + "_biz")
+                 if type(expr) == exp.EQ:
+                     return f"{left} is {rng.choice(['valid', 'active'])}"
+        
+        # MISSING_WHERE_DETAILS - Replace literal values with subjective terms
+        if self.config.is_active(PerturbationType.MISSING_WHERE_DETAILS):
+             if 'where' in seed_context.lower():
+                 rng = self._get_rng(seed_context + "_where_miss")
+                 if type(expr) in [exp.GT, exp.GTE]:
+                     return f"{left} {self._choose_word(op_canonical, seed_context)} the high threshold"
+                 if type(expr) in [exp.LT, exp.LTE]:
+                     return f"{left} {self._choose_word(op_canonical, seed_context)} the low threshold"
+                 if type(expr) == exp.EQ:
+                     return f"{left} is the relevant one"
+                 if type(expr) == exp.Like:
+                     return f"{left} matches the pattern"
+
+        op_str = self._choose_word(op_canonical, seed_context + "_op")
+        return f"{left} {op_str} {right}"
+
+    def _render_aggregate(self, agg_node, seed_context):
+        """Render aggregate function."""
+        agg_type_map = {
+            exp.Count: 'count', exp.Sum: 'sum', exp.Avg: 'avg',
+            exp.Min: 'min', exp.Max: 'max'
+        }
+        agg_type = agg_type_map.get(type(agg_node), 'count')
+        
+        rng = self._get_rng(seed_context + "_agg_var")
+        options = self.agg_variations.get(agg_type, [f"{agg_type} of"])
+        
+        # VAGUE_AGGREGATION - use vague terms for aggregate functions
+        if self.config.is_active(PerturbationType.VAGUE_AGGREGATION):
+            vague_maps = {
+                'count': ['number', 'total', 'how many'],
+                'sum': ['total', 'combined amount'],
+                'avg': ['average', 'typical value'],
+                'min': ['smallest', 'minimum'],
+                'max': ['largest', 'maximum']
+            }
+            template = rng.choice(vague_maps.get(agg_type, ['value']))
+        elif not self.config.is_active(PerturbationType.SYNONYM_SUBSTITUTION):
+             template = options[0]
+        else:
+             template = rng.choice(options)
+             
+        if isinstance(agg_node.this, exp.Star):
+             return f"{template} of all rows" if 'of' not in template else f"{template} all rows"
+        else:
+             col_str = self._render_expression(agg_node.this, seed_context + "_inner")
+             return f"{template} of {col_str}" if 'of' not in template else f"{template} {col_str}"
+
+    def _render_join(self, join_node, seed_context):
+        # INCOMPLETE_JOINS
+        if self.config.is_active(PerturbationType.INCOMPLETE_JOINS):
+            rng = self._get_rng(seed_context + "_inc_join")
+            connector = rng.choice(["with", "and their", "along with"])
+            table = self._render_table(join_node.this, seed_context + "_join_table")
+            return f"{connector} {table}"
+
         side = join_node.args.get('side', '')
         join_type = f"{side} " if side else ""
+        table = self._render_table(join_node.this, seed_context + "_join_table")
         
-        # Get table
-        table = self._render_table(join_node.this)
-        
-        # Get ON condition
         on = join_node.args.get('on')
         if on:
-            condition = self._render_expression(on)
+            condition = self._render_expression(on, seed_context + "_on")
             on_str = f" on {condition}"
         else:
             on_str = ""
+            
+        join_word = self._choose_word('joined with', seed_context + "_join_kw")
+        return f"{join_type}{join_word} {table}{on_str}"
+
+    # ========== Other Statements ==========
+    def render_insert(self, node):
+        """Render INSERT with column/value details."""
+        # Get Schema object which contains table + columns
+        schema = node.this
         
-        return f"{join_type}joined with {table}{on_str}"
-    
-    def _render_aggregate(self, agg_node):
-        """Render aggregate function."""
-        if isinstance(agg_node, exp.Count):
-            if isinstance(agg_node.this, exp.Star):
-                return "count of all rows"
-            else:
-                col = self._render_expression(agg_node.this)
-                return f"count of {col}"
-        elif isinstance(agg_node, exp.Sum):
-            col = self._render_expression(agg_node.this)
-            return f"sum of {col}"
-        elif isinstance(agg_node, exp.Avg):
-            col = self._render_expression(agg_node.this)
-            return f"average of {col}"
-        elif isinstance(agg_node, exp.Min):
-            col = self._render_expression(agg_node.this)
-            return f"minimum of {col}"
-        elif isinstance(agg_node, exp.Max):
-            col = self._render_expression(agg_node.this)
-            return f"maximum of {col}"
+        # Extract table name and columns from Schema
+        if isinstance(schema, exp.Schema):
+            table_node = schema.this
+            # Columns are stored as Identifier objects in schema.expressions
+            columns_list = schema.expressions if hasattr(schema, 'expressions') else []
         else:
-            return "aggregate"
-    
-    def _render_expression(self, expr):
-        """Render generic expression."""
-        if isinstance(expr, exp.Column):
-            table = expr.table
-            name = expr.name
-            if table:
-                return f"{table}.{name}"
-            return name
+            table_node = schema
+            columns_list = []
         
-        elif isinstance(expr, exp.Literal):
-            return str(expr.this)
+        # Extract values from 'expression' field (not 'values')
+        values_expr = node.args.get('expression')
+        values_list = []
         
-        elif isinstance(expr, exp.Boolean):
-            return str(expr.this).upper()
+        if isinstance(values_expr, exp.Values) and hasattr(values_expr, 'expressions'):
+            # Get first tuple
+            first_tuple = values_expr.expressions[0]
+            if isinstance(first_tuple, exp.Tuple) and hasattr(first_tuple, 'expressions'):
+                values_list = first_tuple.expressions
         
-        elif isinstance(expr, exp.Anonymous):
-            return f"{expr.this}()"
-        
-        # Aggregates (check before binary operations since aggregates can appear in comparisons)
-        elif isinstance(expr, (exp.Count, exp.Sum, exp.Avg, exp.Min, exp.Max)):
-            return self._render_aggregate(expr)
-        
-        # Table reference
-        elif isinstance(expr, exp.Table):
-            return self._render_table(expr)
-        
-        # Binary operations
-        elif isinstance(expr, exp.EQ):
-            left = self._render_expression(expr.this)
-            right = self._render_expression(expr.expression)
-            op = self._format_operator('eq')
-            return f"{left} {op} {right}"
-        
-        elif isinstance(expr, exp.NEQ):
-            left = self._render_expression(expr.this)
-            right = self._render_expression(expr.expression)
-            op = self._format_operator('neq')
-            return f"{left} {op} {right}"
-        
-        elif isinstance(expr, exp.GT):
-            left = self._render_expression(expr.this)
-            right = self._render_expression(expr.expression)
-            op = self._format_operator('gt')
-            return f"{left} {op} {right}"
-        
-        elif isinstance(expr, exp.GTE):
-            left = self._render_expression(expr.this)
-            right = self._render_expression(expr.expression)
-            op = self._format_operator('gte')
-            return f"{left} {op} {right}"
-        
-        elif isinstance(expr, exp.LT):
-            left = self._render_expression(expr.this)
-            right = self._render_expression(expr.expression)
-            op = self._format_operator('lt')
-            return f"{left} {op} {right}"
-        
-        elif isinstance(expr, exp.LTE):
-            left = self._render_expression(expr.this)
-            right = self._render_expression(expr.expression)
-            op = self._format_operator('lte')
-            return f"{left} {op} {right}"
-        
-        elif isinstance(expr, exp.Like):
-            left = self._render_expression(expr.this)
-            right = self._render_expression(expr.expression)
-            return f"{left} like {right}"
-        
-        elif isinstance(expr, exp.In):
-            left = self._render_expression(expr.this)
-            
-            # Check for subquery in 'query' attribute first
-            query_subq = expr.args.get('query')
-            if query_subq and isinstance(query_subq, exp.Subquery):
-                inner_query = query_subq.this
-                if isinstance(inner_query, exp.Select):
-                    inner_nl = self.render_select(inner_query)
-                    inner_nl = inner_nl.rstrip('.')
-                    return f"{left} in (subquery that: {inner_nl})"
-            
-            # Get the IN list/subquery from expressions
-            right_exprs = expr.expressions if hasattr(expr, 'expressions') else []
-            if right_exprs:
-                if isinstance(right_exprs[0], exp.Select):
-                    # Recursively render the subquery
-                    inner_nl = self.render_select(right_exprs[0])
-                    # Remove trailing period
-                    inner_nl = inner_nl.rstrip('.')
-                    return f"{left} in (subquery that: {inner_nl})"
+        # Build with perturbations
+        if columns_list and values_list:
+            # Render columns - handle Identifier objects
+            cols_rendered = []
+            for i, c in enumerate(columns_list):
+                if isinstance(c, exp.Identifier):
+                    col_name = str(c.this)
+                    # Apply column perturbations manually
+                    if self.config.is_active(PerturbationType.COLUMN_VARIATIONS):
+                        rng = self._get_rng(f"insert_col_{i}")
+                        if "_" in col_name:
+                            parts = col_name.split('_')
+                            if rng.choice([True, False]):
+                                col_name = parts[0] + ''.join(x.title() for x in parts[1:])
+                    cols_rendered.append(col_name)
                 else:
-                    values = [self._render_expression(v) for v in right_exprs]
-                    return f"{left} in ({', '.join(values)})"
-            return f"{left} in (values)"
-        
-        elif isinstance(expr, exp.DateSub):
-            # DATE_SUB(NOW(), INTERVAL X DAY)
-            days = self._render_expression(expr.expression)
-            unit = expr.args.get('unit')
-            unit_str = self._render_expression(unit) if unit else "DAY"
-            return f"date minus {days} {unit_str}"
-        
-        elif isinstance(expr, exp.Var):
-            return str(expr.this)
-        
-        elif isinstance(expr, exp.Identifier):
-            return str(expr.this)
-        
-        # Subquery
-        elif isinstance(expr, exp.Select):
-            return "subquery"
+                    cols_rendered.append(self._render_expression(c, f"insert_col_{i}"))
+            
+            # Render values
+            vals_rendered = [self._render_expression(v, f"insert_val_{i}") for i, v in enumerate(values_list)]
+            
+            # Render table with perturbations
+            table_display = self._render_table(table_node, "insert_table")
+            
+            # Build column=value pairs
+            pairs = [f"{c} {v}" for c, v in zip(cols_rendered, vals_rendered)]
+            
+            return f"Insert into {table_display} with {', '.join(pairs)}."
         
         # Fallback
-        else:
-            return f"expression"
+        table_display = self._render_table(table_node if isinstance(schema, exp.Schema) else schema, "insert_table")
+        return f"Insert into {table_display}."
+        
+    def render_update(self, node):
+        """Render UPDATE with SET and WHERE clauses."""
+        table = self._render_table(node.this, "update_table")
+        parts = [f"Update {table}"]
+        
+        # SET clause
+        expressions = node.expressions
+        if expressions:
+            set_parts = []
+            for i, expr in enumerate(expressions):
+                if isinstance(expr, exp.EQ):
+                    col = self._render_expression(expr.this, f"update_col_{i}")
+                    val = self._render_expression(expr.expression, f"update_val_{i}")
+                    set_parts.append(f"{col} = {val}")
+            if set_parts:
+                parts.append(f"set {', '.join(set_parts)}")
+        
+        # WHERE clause  
+        where_node = node.args.get('where')
+        if where_node:
+            condition = self._render_expression(where_node.this, "update_where")
+            where_word = self._choose_word('where', 'update_where_clause')
+            parts.append(f"{where_word} {condition}")
+        
+        return " ".join(parts) + "."
+        
+    def render_delete(self, node):
+        """Render DELETE with WHERE clause."""
+        table = self._render_table(node.this, "delete_table")
+        parts = [f"Delete from {table}"]
+        
+        # WHERE clause
+        where_node = node.args.get('where')
+        if where_node:
+            condition = self._render_expression(where_node.this, "delete_where")
+            where_word = self._choose_word('where', 'delete_where_clause')
+            parts.append(f"{where_word} {condition}")
+        
+        return " ".join(parts) + "."
 
-    def generate_variations(self, ast, num_variations=3, max_retries=10):
-        """
-        Generate vanilla prompt plus multiple perturbed variations.
-        Ensures all variations are unique by retrying if duplicates are generated.
+    # ========== Post-processing ==========
+    def _apply_typos(self, text: str) -> str:
+        """Inject realistic typos deterministically - sparse and natural."""
+        rng = self._get_rng("typos")
+        words = text.split()
+        if not words: return text
         
-        Args:
-            ast: Parsed SQL AST
-            num_variations: Number of perturbed variations to generate
-            max_retries: Maximum retry attempts per variation to ensure uniqueness
+        # Reduce density: max 1-2 typos total, with lower probability
+        if len(words) < 5:
+            num_typos = 1 if rng.random() < 0.7 else 0
+        else:
+            num_typos = rng.choice([1, 2]) if rng.random() < 0.8 else 0
         
-        Returns:
-            dict with 'vanilla' and 'variations' keys
-        """
-        import random
-        
-        # Generate vanilla version (no perturbations)
-        vanilla_renderer = SQLToNLRenderer(
-            use_variations=False,
-            verbosity='normal',
-            operator_style='words',
-            add_fluff=False,
-            code_switch_probability=0.0
-        )
-        vanilla_prompt = vanilla_renderer.render(ast)
-        
-        # Generate unique perturbed variations
-        variations = []
-        seen = {vanilla_prompt}  # Track seen prompts to avoid duplicates
-        
-        for i in range(num_variations):
-            attempts = 0
-            variation_prompt = None
+        if num_typos == 0:
+            return text
             
-            # Try to generate a unique variation
-            while attempts < max_retries:
-                # Randomize perturbation settings
-                perturbed_renderer = SQLToNLRenderer(
-                    use_variations=random.choice([True, False]),
-                    verbosity=random.choice(['terse', 'normal', 'verbose']),
-                    operator_style=random.choice(['words', 'symbols', 'mixed']),
-                    add_fluff=random.choice([True, False]),
-                    code_switch_probability=random.uniform(0.0, 0.5)
-                )
-                variation_prompt = perturbed_renderer.render(ast)
-                
-                # Check if unique
-                if variation_prompt not in seen:
-                    break  # Found unique variation
-                
-                attempts += 1
-            
-            # Add variation (even if duplicate after max retries - graceful degradation)
-            variations.append(variation_prompt)
-            seen.add(variation_prompt)
+        # Protect SQL keywords
+        protected = {'select', 'from', 'where', 'insert', 'update', 'delete', 'join', 'group', 'order', 'limit'}
         
-        return {
-            'vanilla': vanilla_prompt,
-            'variations': variations
-        }
+        # Find typo-able indices (not protected words)
+        typoable_indices = [i for i, w in enumerate(words) if w.lower() not in protected and len(w) > 3]
+        
+        if not typoable_indices:
+            return text
+            
+        indices = rng.sample(typoable_indices, min(num_typos, len(typoable_indices)))
+        
+        for idx in indices:
+            word = words[idx]
+            # Improved typo patterns
+            pattern_choice = rng.random()
+            if pattern_choice < 0.5:  # Adjacent key swap
+                if len(word) > 2:
+                    pos = rng.randint(0, len(word)-2)
+                    word = word[:pos] + word[pos+1] + word[pos] + word[pos+2:]
+            elif pattern_choice < 0.8:  # Missing letter
+                if len(word) > 3:
+                    pos = rng.randint(1, len(word)-1)
+                    word = word[:pos] + word[pos+1:]
+            else:  # Double letter
+                pos = rng.randint(0, len(word)-1)
+                word = word[:pos] + word[pos] + word[pos:]
+            
+            words[idx] = word
+            
+        return " ".join(words)

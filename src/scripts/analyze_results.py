@@ -112,15 +112,26 @@ def analyze_and_visualize():
     one_unique = 0
     
     for d in data:
-        variations = d.get('nl_prompt_variations', [])
-        if len(variations) == 3:
+        gen_pert = d.get('generated_perturbations', {})
+        # efficient extraction
+        variations = [p['perturbed_nl_prompt'] for p in gen_pert.get('single_perturbations', []) if p.get('perturbed_nl_prompt')]
+        
+        if variations: # Check if we have variations
             unique_count = len(set(variations))
-            if unique_count == 3:
+            # Just count unique variations, logic for specific buckets (3, 2, 1) might need adjustment 
+            # if we have 10 variations now.
+            # Assuming we want to see if there is diversity. Let's simplfy to % unique.
+            # But preserving user graph buckets: "All 3 unique" implies 3 variations.
+            # We now have potentially 10.
+            # I will adapt the buckets to: All Unique, Some Duplicates, All Same?
+            # Or just check for duplicates.
+            if unique_count == len(variations):
                 all_unique += 1
-            elif unique_count == 2:
-                two_unique += 1
             elif unique_count == 1:
                 one_unique += 1
+            else:
+                two_unique += 1 # "Some duplicates" bucket basically.
+
     
     print("\n3. NL Variation Uniqueness:")
     print("-" * 30)
@@ -144,10 +155,19 @@ def analyze_and_visualize():
     variation_lengths = []
     
     for d in data:
-        vanilla = d.get('nl_prompt', '')
+        # Extract from new structure
+        gen_pert = d.get('generated_perturbations', {})
+        vanilla = gen_pert.get('original', {}).get('nl_prompt', '')
+        
+        # Variations are now the single perturbations that are applicable and have a Prompt
+        variations = []
+        for p in gen_pert.get('single_perturbations', []):
+            if p.get('perturbed_nl_prompt'):
+                variations.append(p['perturbed_nl_prompt'])
+                
         vanilla_lengths.append(len(vanilla.split()))
         
-        for var in d.get('nl_prompt_variations', []):
+        for var in variations:
             variation_lengths.append(len(var.split()))
     
     print("\n4. NL Prompt Length (words):")
@@ -167,56 +187,96 @@ def analyze_and_visualize():
     plt.savefig('visualizations_verify/nl_prompt_analysis.png', dpi=300, bbox_inches='tight')
     plt.close()
     
-    # 7. Perturbation Technique Detection (heuristic)
-    technique_counts = {
-        'Code-Switching (SQL keywords)': 0,
-        'Verbose': 0,
-        'Fluff (conversational)': 0,
-        'Symbols (>, =, <)': 0,
-        'Lexical Variation': 0
-    }
+    # 7. Perturbation Analysis (Explicit SDT Types)
     
-    fluff_markers = ['I need to', 'Please', 'Can you', "Let's", 'Help me', 
-                     'thanks', 'please', 'for me', 'if possible']
-    verbose_markers = ['I need to retrieve the following', 'from the table named', 
-                       'specifically filtering']
-    lexical_markers = ['Retrieve', 'Fetch', 'Find', 'Pull', 'Show']
+    # Metrics to track
+    perturbation_stats = {} # {name: {'applied': 0, 'total': 0, 'len_deltas': []}}
     
     for d in data:
-        for var in d.get('nl_prompt_variations', []):
-            # Code-switching: uppercase SQL keywords
-            if any(kw in var for kw in ['SELECT', 'FROM', 'WHERE', 'GROUP BY']):
-                technique_counts['Code-Switching (SQL keywords)'] += 1
+        gen_pert = d.get('generated_perturbations', {})
+        vanilla = gen_pert.get('original', {}).get('nl_prompt', '')
+        vanilla_len = len(vanilla.split())
+        
+        single_perts = gen_pert.get('single_perturbations', [])
+        
+        for p in single_perts:
+            p_name = p['perturbation_name']
+            if p_name not in perturbation_stats:
+                perturbation_stats[p_name] = {'applied': 0, 'total': 0, 'len_deltas': []}
             
-            # Verbose
-            if any(marker in var for marker in verbose_markers):
-                technique_counts['Verbose'] += 1
+            perturbation_stats[p_name]['total'] += 1
             
-            # Fluff
-            if any(marker in var for marker in fluff_markers):
-                technique_counts['Fluff (conversational)'] += 1
-            
-            # Symbols
-            if any(sym in var for sym in [' > ', ' < ', ' = ', ' >= ', ' <= ']):
-                technique_counts['Symbols (>, =, <)'] += 1
-            
-            # Lexical variation
-            if any(marker in var for marker in lexical_markers):
-                technique_counts['Lexical Variation'] += 1
-    
-    print("\n5. Perturbation Technique Usage (in variations):")
+            if p['applicable']:
+                perturbation_stats[p_name]['applied'] += 1
+                p_prompt = p.get('perturbed_nl_prompt', '')
+                if p_prompt:
+                    delta = len(p_prompt.split()) - vanilla_len
+                    perturbation_stats[p_name]['len_deltas'].append(delta)
+
+    # 7a. Applicability Rates
+    print("\n5. Perturbation Applicability Rates:")
     print("-" * 30)
-    for k, v in sorted(technique_counts.items(), key=lambda x: x[1], reverse=True):
-        print(f"  {k}: {v} ({v/(len(data)*3)*100:.1f}%)")
     
+    names = []
+    rates = []
+    
+    for name, stats in sorted(perturbation_stats.items()):
+        rate = (stats['applied'] / stats['total']) * 100 if stats['total'] > 0 else 0
+        print(f"  {name}: {stats['applied']}/{stats['total']} ({rate:.1f}%)")
+        names.append(name.replace('_', ' ').title())
+        rates.append(rate)
+        
     plt.figure(figsize=(12, 6))
-    plt.barh(list(technique_counts.keys()), list(technique_counts.values()), 
-             color='#9b59b6')
-    plt.title('Perturbation Technique Usage Across All Variations', 
-              fontsize=14, fontweight='bold')
-    plt.xlabel('Count')
+    bars = plt.barh(names, rates, color='#2ecc71')
+    plt.title('Perturbation Applicability Rates', fontsize=14, fontweight='bold')
+    plt.xlabel('Applicability (%)')
+    plt.xlim(0, 100)
+    plt.grid(axis='x', alpha=0.3)
+    
+    # Add value labels
+    for bar in bars:
+        width = bar.get_width()
+        plt.text(width + 1, bar.get_y() + bar.get_height()/2, f'{width:.1f}%', 
+                 va='center', fontsize=10)
+                 
     plt.tight_layout()
-    plt.savefig('visualizations_verify/perturbation_techniques.png', dpi=300, bbox_inches='tight')
+    plt.savefig('visualizations_verify/perturbation_applicability.png', dpi=300, bbox_inches='tight')
+    plt.close()
+
+    # 7b. Prompt Length Impact
+    print("\n6. Prompt Length Impact (Avg Word Count Change):")
+    print("-" * 30)
+    
+    avg_deltas = []
+    delta_names = []
+    box_data = []
+    
+    for name, stats in sorted(perturbation_stats.items()):
+        deltas = stats['len_deltas']
+        if deltas:
+            avg = sum(deltas) / len(deltas)
+            print(f"  {name}: {avg:+.1f} words")
+            avg_deltas.append(avg)
+            delta_names.append(name.replace('_', ' ').title())
+            box_data.append(deltas)
+        else:
+             print(f"  {name}: N/A")
+
+    plt.figure(figsize=(12, 6))
+    # Sort by avg delta for better viz
+    sorted_indices = sorted(range(len(avg_deltas)), key=lambda k: avg_deltas[k])
+    sorted_names = [delta_names[i] for i in sorted_indices]
+    sorted_data = [box_data[i] for i in sorted_indices]
+    
+    plt.boxplot(sorted_data, vert=False, labels=sorted_names, patch_artist=True,
+                boxprops=dict(facecolor='#9b59b6', alpha=0.6))
+    plt.title('Prompt Length Impact by Perturbation Type', fontsize=14, fontweight='bold')
+    plt.xlabel('Word Count Delta (Perturbed - Vanilla)')
+    plt.grid(axis='x', alpha=0.3)
+    plt.axvline(0, color='black', linestyle='--', alpha=0.5) # Zero line
+    
+    plt.tight_layout()
+    plt.savefig('visualizations_verify/perturbation_length_impact.png', dpi=300, bbox_inches='tight')
     plt.close()
     
     # 8. Summary Statistics

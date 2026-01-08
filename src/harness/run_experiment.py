@@ -59,21 +59,16 @@ def main():
             
             engine = ExecutionEngine(adapter, run_id, args.output)
             
-            # Monkey-patch engine's load prompts to skip processed?
-            # Or handle inside engine. Cleaner to handle inside Engine if I could pass "skip_ids".
-            # For now, I'll modify ExecutionEngine to accept skip_ids? 
-            # Or just let ExecutionEngine run and check output file existence?
-            # Creating a subclass or modifying ExecutionEngine is better.
-            # I'll update ExecutionEngine logic quickly to support this.
+            # Simple resume logic by filtering processed_ids is best done here 
+            # or we rely on the engine? Engine loads from file. 
+            # If we want to skip already processed, we should pass that info to engine 
+            # or pre-filter the file. 
+            # Modifying ExecutionEngine._load_prompts dynamically:
             
-            # Helper to filter prompts before batching
             original_load = engine._load_prompts
             def load_and_filter(path):
                 data = original_load(path)
                 filtered = [d for d in data if str(d.get('id', '')) not in processed_ids]
-                # Fallback if ID not present? Harness usually relies on stable IDs.
-                # If prompt has no ID, we generated one in engine loop. We can't verify 'skip' easily without input IDs.
-                # Assuming input has IDs or we skip resume for ID-less data.
                 if len(filtered) < len(data):
                     print(f"Skipping {len(data) - len(filtered)} already processed items.")
                 return filtered
