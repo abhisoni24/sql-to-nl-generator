@@ -17,12 +17,20 @@ class VLLMAdapter(BaseModelAdapter):
             raise ImportError("vllm package is required for VLLMAdapter")
         
         self._model_name = model_name
-        # Initialize vLLM engine
-        # Note: This is heavyweight and should be done once per process.
+        
+        # FIX: Disable custom multiprocessing for Colab compatibility
+        import os
+        os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
+        
+        # Initialize vLLM engine with Colab-friendly settings
         self.llm = LLM(
             model=model_name,
             tensor_parallel_size=tensor_parallel_size, 
-            trust_remote_code=True
+            trust_remote_code=True,
+            # Add these Colab-specific parameters:
+            disable_log_stats=True,
+            enforce_eager=True,  # Disable CUDA graph for stability
+            gpu_memory_utilization=0.85  # Leave some GPU memory free
         )
         
         # Fixed decoding parameters as per requirements

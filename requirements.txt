@@ -63,4 +63,4 @@ uritemplate==4.2.0
 urllib3==2.6.2
 websockets==15.0.1
 zss==1.2.0
-vllm==0.13.0
+vllm==0.4.2
