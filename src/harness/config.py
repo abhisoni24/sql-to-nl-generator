@@ -17,6 +17,7 @@ class ModelConfig:
     model_identifier: str
     decoding_overrides: Dict[str, Any]
     hardware_notes: str
+    rate_limit: Dict[str, Any]  # New: rate limiting configuration
 
 class ConfigLoader:
     
@@ -39,7 +40,8 @@ class ConfigLoader:
                 adapter_type=entry['adapter_type'],
                 model_identifier=entry['model_identifier'],
                 decoding_overrides=entry.get('decoding_overrides', {}),
-                hardware_notes=entry.get('hardware_notes', "")
+                hardware_notes=entry.get('hardware_notes', ""),
+                rate_limit=entry.get('rate_limit', None)  # New: optional rate limit config
             ))
         return experiments
 

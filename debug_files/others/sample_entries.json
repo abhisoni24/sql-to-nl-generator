@@ -1,0 +1,741 @@
+{
+  "simple": {
+    "id": 1,
+    "complexity": "simple",
+    "sql": "SELECT u1.country_code, u1.signup_date, u1.email FROM users AS u1 ORDER BY u1.signup_date LIMIT 70",
+    "tables": [
+      "users"
+    ],
+    "generated_perturbations": {
+      "original": {
+        "nl_prompt": "Get u1.country_code, u1.signup_date, u1.email from users (as u1) ordered by u1.signup_date ascending limited to 70 results.",
+        "sql": "SELECT u1.country_code, u1.signup_date, u1.email FROM users AS u1 ORDER BY u1.signup_date LIMIT 70",
+        "tables": [
+          "users"
+        ],
+        "complexity": "simple"
+      },
+      "single_perturbations": [
+        {
+          "perturbation_id": 1,
+          "perturbation_name": "under_specification",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get country_code, signup_date, email from the appropriate table ordered by signup_date ascending limited to 70 results.",
+          "changes_made": "Omitted explicit table or column names.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 2,
+          "perturbation_name": "implicit_business_logic",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 3,
+          "perturbation_name": "synonym_substitution",
+          "applicable": true,
+          "perturbed_nl_prompt": "Fetch u1.country_code, u1.signup_date, u1.email from users (as u1) sequenced by u1.signup_date ascending capped at 70 results.",
+          "changes_made": "Replaced schema terms with synonyms.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 4,
+          "perturbation_name": "incomplete_joins",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 5,
+          "perturbation_name": "relative_temporal",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 6,
+          "perturbation_name": "ambiguous_pronouns",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get u1.country_code, u1.signup_date, u1.email from that table ordered by u1.signup_date ascending limited to 70 results.",
+          "changes_made": "Replaced schema references with ambiguous pronouns.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 7,
+          "perturbation_name": "vague_aggregation",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 8,
+          "perturbation_name": "column_variations",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get u1.countryCode, u1.signupDate, u1.email from users (as u1) ordered by u1.signupDate ascending limited to 70 results.",
+          "changes_made": "Modified column naming conventions.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 9,
+          "perturbation_name": "missing_where_details",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 10,
+          "perturbation_name": "typos",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get u1.country_code, u1.signup_ate, u1.email from users (as u1) oredred by u1.signup_date ascending limited to 70 results.",
+          "changes_made": "injected naturalistic typos.",
+          "reason_not_applicable": null
+        }
+      ],
+      "metadata": {
+        "total_applicable_perturbations": 5,
+        "total_not_applicable": 5,
+        "applicability_rate": 0.5
+      }
+    }
+  },
+  "join": {
+    "id": 301,
+    "complexity": "join",
+    "sql": "SELECT * FROM likes AS l1 LEFT JOIN posts AS p6 ON l1.post_id = p6.id",
+    "tables": [
+      "likes",
+      "posts"
+    ],
+    "generated_perturbations": {
+      "original": {
+        "nl_prompt": "Get all columns from likes (as l1) LEFT joined with posts (as p6) on l1.post_id equals p6.id.",
+        "sql": "SELECT * FROM likes AS l1 LEFT JOIN posts AS p6 ON l1.post_id = p6.id",
+        "tables": [
+          "likes",
+          "posts"
+        ],
+        "complexity": "join"
+      },
+      "single_perturbations": [
+        {
+          "perturbation_id": 1,
+          "perturbation_name": "under_specification",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get all columns from the appropriate table LEFT joined with the appropriate table on post_id equals id.",
+          "changes_made": "Omitted explicit table or column names.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 2,
+          "perturbation_name": "implicit_business_logic",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 3,
+          "perturbation_name": "synonym_substitution",
+          "applicable": true,
+          "perturbed_nl_prompt": "Fetch all columns from likes (as l1) LEFT linked to posts (as p6) on l1.post_id = p6.id.",
+          "changes_made": "Replaced schema terms with synonyms.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 4,
+          "perturbation_name": "incomplete_joins",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get all columns from likes (as l1) with posts (as p6).",
+          "changes_made": "Removed explicit keys and used natural language for joins.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 5,
+          "perturbation_name": "relative_temporal",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 6,
+          "perturbation_name": "ambiguous_pronouns",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get all columns from that table LEFT joined with that table on l1.post_id equals p6.id.",
+          "changes_made": "Replaced schema references with ambiguous pronouns.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 7,
+          "perturbation_name": "vague_aggregation",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 8,
+          "perturbation_name": "column_variations",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get all columns from likes (as l1) LEFT joined with posts (as p6) on l1.post_id equals p6.id.",
+          "changes_made": "Modified column naming conventions.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 9,
+          "perturbation_name": "missing_where_details",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 10,
+          "perturbation_name": "typos",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get all columns from lies (as l1) LEFT joined wtih posts (as p6) on l1.post_id equals p6.id.",
+          "changes_made": "injected naturalistic typos.",
+          "reason_not_applicable": null
+        }
+      ],
+      "metadata": {
+        "total_applicable_perturbations": 6,
+        "total_not_applicable": 4,
+        "applicability_rate": 0.6
+      }
+    }
+  },
+  "aggregate": {
+    "id": 601,
+    "complexity": "aggregate",
+    "sql": "SELECT f1.followed_at, COUNT(*) AS count_all FROM follows AS f1 GROUP BY f1.followed_at HAVING COUNT(*) > 5",
+    "tables": [
+      "follows"
+    ],
+    "generated_perturbations": {
+      "original": {
+        "nl_prompt": "Get f1.followed_at, expression from follows (as f1) grouped by f1.followed_at having count of all rows greater than 5.",
+        "sql": "SELECT f1.followed_at, COUNT(*) AS count_all FROM follows AS f1 GROUP BY f1.followed_at HAVING COUNT(*) > 5",
+        "tables": [
+          "follows"
+        ],
+        "complexity": "aggregate"
+      },
+      "single_perturbations": [
+        {
+          "perturbation_id": 1,
+          "perturbation_name": "under_specification",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get followed_at, expression from the appropriate table grouped by followed_at having count of all rows greater than 5.",
+          "changes_made": "Omitted explicit table or column names.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 2,
+          "perturbation_name": "implicit_business_logic",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 3,
+          "perturbation_name": "synonym_substitution",
+          "applicable": true,
+          "perturbed_nl_prompt": "Fetch f1.followed_at, expression from follows (as f1) categorized by f1.followed_at having total count of all rows exceeds 5.",
+          "changes_made": "Replaced schema terms with synonyms.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 4,
+          "perturbation_name": "incomplete_joins",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 5,
+          "perturbation_name": "relative_temporal",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 6,
+          "perturbation_name": "ambiguous_pronouns",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get f1.followed_at, expression from that table grouped by f1.followed_at having count of all rows greater than 5.",
+          "changes_made": "Replaced schema references with ambiguous pronouns.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 7,
+          "perturbation_name": "vague_aggregation",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get f1.followed_at, expression from follows (as f1) for each f1.followed_at having total of all rows greater than 5.",
+          "changes_made": "Replaced approximate aggregation functions with vague terms.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 8,
+          "perturbation_name": "column_variations",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get f1.followedAt, expression from follows (as f1) grouped by f1.followed_at having count of all rows greater than 5.",
+          "changes_made": "Modified column naming conventions.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 9,
+          "perturbation_name": "missing_where_details",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 10,
+          "perturbation_name": "typos",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get f1.followed_at, expession from follows (as f1) grouped by f1.flolowed_at having count of all rows greater than 5.",
+          "changes_made": "injected naturalistic typos.",
+          "reason_not_applicable": null
+        }
+      ],
+      "metadata": {
+        "total_applicable_perturbations": 6,
+        "total_not_applicable": 4,
+        "applicability_rate": 0.6
+      }
+    }
+  },
+  "advanced": {
+    "id": 901,
+    "complexity": "advanced",
+    "sql": "SELECT * FROM users AS u1 WHERE u1.id IN (SELECT sub_p.user_id FROM posts AS sub_p WHERE sub_p.content LIKE '%a%')",
+    "tables": [
+      "users",
+      "posts"
+    ],
+    "generated_perturbations": {
+      "original": {
+        "nl_prompt": "Get all columns from users (as u1) where u1.id in ().",
+        "sql": "SELECT * FROM users AS u1 WHERE u1.id IN (SELECT sub_p.user_id FROM posts AS sub_p WHERE sub_p.content LIKE '%a%')",
+        "tables": [
+          "users",
+          "posts"
+        ],
+        "complexity": "advanced"
+      },
+      "single_perturbations": [
+        {
+          "perturbation_id": 1,
+          "perturbation_name": "under_specification",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get all columns from the appropriate table where id in ().",
+          "changes_made": "Omitted explicit table or column names.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 2,
+          "perturbation_name": "implicit_business_logic",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get all columns from users (as u1) where u1.id in ().",
+          "changes_made": "Replaced specific filter conditions with specific business logic terms.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 3,
+          "perturbation_name": "synonym_substitution",
+          "applicable": true,
+          "perturbed_nl_prompt": "Fetch all columns from users (as u1) when u1.id in ().",
+          "changes_made": "Replaced schema terms with synonyms.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 4,
+          "perturbation_name": "incomplete_joins",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 5,
+          "perturbation_name": "relative_temporal",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 6,
+          "perturbation_name": "ambiguous_pronouns",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get all columns from that table where u1.id in ().",
+          "changes_made": "Replaced schema references with ambiguous pronouns.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 7,
+          "perturbation_name": "vague_aggregation",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 8,
+          "perturbation_name": "column_variations",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get all columns from users (as u1) where u1.id in ().",
+          "changes_made": "Modified column naming conventions.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 9,
+          "perturbation_name": "missing_where_details",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get all columns from users (as u1) where u1.id in ().",
+          "changes_made": "Used subjective terms in WHERE clauses.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 10,
+          "perturbation_name": "typos",
+          "applicable": true,
+          "perturbed_nl_prompt": "Get all colums from usres (as u1) where u1.id in ().",
+          "changes_made": "injected naturalistic typos.",
+          "reason_not_applicable": null
+        }
+      ],
+      "metadata": {
+        "total_applicable_perturbations": 7,
+        "total_not_applicable": 3,
+        "applicability_rate": 0.7
+      }
+    }
+  },
+  "insert": {
+    "id": 1201,
+    "complexity": "insert",
+    "sql": "INSERT INTO posts (user_id, content, posted_at, view_count) VALUES (376, 'Sample text 70', NOW(), 227)",
+    "tables": [
+      "posts"
+    ],
+    "generated_perturbations": {
+      "original": {
+        "nl_prompt": "Insert into posts with user_id 376, content Sample text 70, posted_at NOW(), view_count 227.",
+        "sql": "INSERT INTO posts (user_id, content, posted_at, view_count) VALUES (376, 'Sample text 70', NOW(), 227)",
+        "tables": [
+          "posts"
+        ],
+        "complexity": "insert"
+      },
+      "single_perturbations": [
+        {
+          "perturbation_id": 1,
+          "perturbation_name": "under_specification",
+          "applicable": true,
+          "perturbed_nl_prompt": "Insert into the appropriate table with user_id 376, content Sample text 70, posted_at NOW(), view_count 227.",
+          "changes_made": "Omitted explicit table or column names.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 2,
+          "perturbation_name": "implicit_business_logic",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 3,
+          "perturbation_name": "synonym_substitution",
+          "applicable": true,
+          "perturbed_nl_prompt": "Insert into posts with user_id 376, content Sample text 70, posted_at NOW(), view_count 227.",
+          "changes_made": "Replaced schema terms with synonyms.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 4,
+          "perturbation_name": "incomplete_joins",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 5,
+          "perturbation_name": "relative_temporal",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 6,
+          "perturbation_name": "ambiguous_pronouns",
+          "applicable": true,
+          "perturbed_nl_prompt": "Insert into that table with user_id 376, content Sample text 70, posted_at NOW(), view_count 227.",
+          "changes_made": "Replaced schema references with ambiguous pronouns.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 7,
+          "perturbation_name": "vague_aggregation",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 8,
+          "perturbation_name": "column_variations",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 9,
+          "perturbation_name": "missing_where_details",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 10,
+          "perturbation_name": "typos",
+          "applicable": true,
+          "perturbed_nl_prompt": "Insert into pots with user_id 367, content Sample text 70, posted_at NOW(), view_count 227.",
+          "changes_made": "injected naturalistic typos.",
+          "reason_not_applicable": null
+        }
+      ],
+      "metadata": {
+        "total_applicable_perturbations": 4,
+        "total_not_applicable": 6,
+        "applicability_rate": 0.4
+      }
+    }
+  },
+  "update": {
+    "id": 1501,
+    "complexity": "update",
+    "sql": "UPDATE follows SET followee_id = 570 WHERE follows.followed_at >= DATE_SUB(NOW(), INTERVAL 5 DAY)",
+    "tables": [
+      "follows"
+    ],
+    "generated_perturbations": {
+      "original": {
+        "nl_prompt": "Update follows set followee_id = 570 where follows.followed_at greater than or equal to NOW() minus 5 days.",
+        "sql": "UPDATE follows SET followee_id = 570 WHERE follows.followed_at >= DATE_SUB(NOW(), INTERVAL 5 DAY)",
+        "tables": [
+          "follows"
+        ],
+        "complexity": "update"
+      },
+      "single_perturbations": [
+        {
+          "perturbation_id": 1,
+          "perturbation_name": "under_specification",
+          "applicable": true,
+          "perturbed_nl_prompt": "Update the appropriate table set followee_id = 570 where followed_at greater than or equal to NOW() minus 5 days.",
+          "changes_made": "Omitted explicit table or column names.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 2,
+          "perturbation_name": "implicit_business_logic",
+          "applicable": true,
+          "perturbed_nl_prompt": "Update follows set followee_id = 570 where follows.followed_at greater than or equal to NOW() minus 5 days.",
+          "changes_made": "Replaced specific filter conditions with specific business logic terms.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 3,
+          "perturbation_name": "synonym_substitution",
+          "applicable": true,
+          "perturbed_nl_prompt": "Update follows set followee_id = 570 filtering by follows.followed_at no less than NOW() minus 5 days.",
+          "changes_made": "Replaced schema terms with synonyms.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 4,
+          "perturbation_name": "incomplete_joins",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 5,
+          "perturbation_name": "relative_temporal",
+          "applicable": true,
+          "perturbed_nl_prompt": "Update follows set followee_id = 570 where follows.followed_at greater than or equal to NOW() minus 5 days.",
+          "changes_made": "Replaced absolute dates with relative terms.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 6,
+          "perturbation_name": "ambiguous_pronouns",
+          "applicable": true,
+          "perturbed_nl_prompt": "Update that table set followee_id = 570 where follows.followed_at greater than or equal to NOW() minus 5 days.",
+          "changes_made": "Replaced schema references with ambiguous pronouns.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 7,
+          "perturbation_name": "vague_aggregation",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 8,
+          "perturbation_name": "column_variations",
+          "applicable": true,
+          "perturbed_nl_prompt": "Update follows set followeeId = 570 where follows.followed_at greater than or equal to NOW() minus 5 days.",
+          "changes_made": "Modified column naming conventions.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 9,
+          "perturbation_name": "missing_where_details",
+          "applicable": true,
+          "perturbed_nl_prompt": "Update follows set followee_id = 570 where follows.followed_at greater than or equal to the high threshold.",
+          "changes_made": "Used subjective terms in WHERE clauses.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 10,
+          "perturbation_name": "typos",
+          "applicable": true,
+          "perturbed_nl_prompt": "Update follows set followee_i = 570 where follows.followed_at greater tahn or equal to NOW() minus 5 days.",
+          "changes_made": "injected naturalistic typos.",
+          "reason_not_applicable": null
+        }
+      ],
+      "metadata": {
+        "total_applicable_perturbations": 8,
+        "total_not_applicable": 2,
+        "applicability_rate": 0.8
+      }
+    }
+  },
+  "delete": {
+    "id": 1801,
+    "complexity": "delete",
+    "sql": "DELETE FROM posts WHERE posts.posted_at < DATE_SUB(NOW(), INTERVAL 6 DAY)",
+    "tables": [
+      "posts"
+    ],
+    "generated_perturbations": {
+      "original": {
+        "nl_prompt": "Delete from posts where posts.posted_at less than NOW() minus 6 days.",
+        "sql": "DELETE FROM posts WHERE posts.posted_at < DATE_SUB(NOW(), INTERVAL 6 DAY)",
+        "tables": [
+          "posts"
+        ],
+        "complexity": "delete"
+      },
+      "single_perturbations": [
+        {
+          "perturbation_id": 1,
+          "perturbation_name": "under_specification",
+          "applicable": true,
+          "perturbed_nl_prompt": "Delete from the appropriate table where posted_at less than NOW() minus 6 days.",
+          "changes_made": "Omitted explicit table or column names.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 2,
+          "perturbation_name": "implicit_business_logic",
+          "applicable": true,
+          "perturbed_nl_prompt": "Delete from posts where posts.posted_at less than NOW() minus 6 days.",
+          "changes_made": "Replaced specific filter conditions with specific business logic terms.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 3,
+          "perturbation_name": "synonym_substitution",
+          "applicable": true,
+          "perturbed_nl_prompt": "Delete from posts having condition posts.posted_at smaller than NOW() minus 6 days.",
+          "changes_made": "Replaced schema terms with synonyms.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 4,
+          "perturbation_name": "incomplete_joins",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 5,
+          "perturbation_name": "relative_temporal",
+          "applicable": true,
+          "perturbed_nl_prompt": "Delete from posts where posts.posted_at less than NOW() minus 6 days.",
+          "changes_made": "Replaced absolute dates with relative terms.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 6,
+          "perturbation_name": "ambiguous_pronouns",
+          "applicable": true,
+          "perturbed_nl_prompt": "Delete from it where posts.posted_at less than NOW() minus 6 days.",
+          "changes_made": "Replaced schema references with ambiguous pronouns.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 7,
+          "perturbation_name": "vague_aggregation",
+          "applicable": false,
+          "perturbed_nl_prompt": null,
+          "changes_made": null,
+          "reason_not_applicable": "Logic check failed."
+        },
+        {
+          "perturbation_id": 8,
+          "perturbation_name": "column_variations",
+          "applicable": true,
+          "perturbed_nl_prompt": "Delete from posts where posts.posted_at less than NOW() minus 6 days.",
+          "changes_made": "Modified column naming conventions.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 9,
+          "perturbation_name": "missing_where_details",
+          "applicable": true,
+          "perturbed_nl_prompt": "Delete from posts where posts.posted_at less than the low threshold.",
+          "changes_made": "Used subjective terms in WHERE clauses.",
+          "reason_not_applicable": null
+        },
+        {
+          "perturbation_id": 10,
+          "perturbation_name": "typos",
+          "applicable": true,
+          "perturbed_nl_prompt": "Delete from pots where posts.posted_at lses than NOW() minus 6 days.",
+          "changes_made": "injected naturalistic typos.",
+          "reason_not_applicable": null
+        }
+      ],
+      "metadata": {
+        "total_applicable_perturbations": 8,
+        "total_not_applicable": 2,
+        "applicability_rate": 0.8
+      }
+    }
+  }
+}

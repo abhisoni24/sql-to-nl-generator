@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/obby/Documents/experiment/gemini-cli/sql-generator/src/harness/run_experiment.py", line 13, in <module>
+    from src.harness.config import ConfigLoader
+  File "/Users/obby/Documents/experiment/gemini-cli/sql-generator/src/harness/config.py", line 8, in <module>
+    from .adapters.gemini import GeminiAdapter
+  File "/Users/obby/Documents/experiment/gemini-cli/sql-generator/src/harness/adapters/gemini.py", line 10, in <module>
+    from python_dotenv import load_dotenv
+ModuleNotFoundError: No module named 'python_dotenv'

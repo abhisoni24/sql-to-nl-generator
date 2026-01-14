@@ -10,6 +10,8 @@ try:
     from openai import OpenAI
 except ImportError:
     OpenAI = None
+from dotenv import load_dotenv
+load_dotenv()
 
 class OpenAIAdapter(BaseModelAdapter):
     """Adapter for OpenAI models."""
@@ -29,15 +31,18 @@ class OpenAIAdapter(BaseModelAdapter):
         results = []
         for prompt in prompts:
             try:
-                response = self.client.chat.completions.create(
+                formatted_prompt = self.format_prompt(prompt)
+                response = self.client.responses.create(
                     model=self._model_name,
-                    messages=[{"role": "user", "content": prompt}],
-                    temperature=0.0,
-                    max_tokens=512
+                    #instructions="You are a helpful assistant.",
+                    input=formatted_prompt,
+                    temperature=0.0
                 )
-                results.append(response.choices[0].message.content)
+                results.append(response.output_text)
             except Exception as e:
-                results.append(f"ERROR: {str(e)}")
+                import logging
+                logging.error(f"OpenAI API error: {str(e)}")
+                results.append("")  # Empty result indicates failure
         return results
 
     def model_name(self) -> str:

@@ -34,8 +34,11 @@ class VLLMAdapter(BaseModelAdapter):
         )
 
     def generate(self, prompts: List[str]) -> List[str]:
+        # Apply model-specific formatting to all prompts
+        formatted_prompts = [self.format_prompt(p) for p in prompts]
+        
         # vLLM handles batching internally efficiently
-        outputs = self.llm.generate(prompts, self.sampling_params)
+        outputs = self.llm.generate(formatted_prompts, self.sampling_params)
         
         results = []
         for output in outputs:

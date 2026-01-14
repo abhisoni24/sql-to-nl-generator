@@ -1,0 +1,12 @@
+perturbation_type,Total,Correct,Accuracy,Avg Similarity
+original,7,1,14.29,0.2503
+under_specification,7,1,14.29,0.2129
+ambiguous_pronouns,7,0,0.0,0.1187
+column_variations,6,0,0.0,0.1471
+implicit_business_logic,4,0,0.0,0.2206
+incomplete_joins,2,0,0.0,0.3667
+missing_where_details,4,0,0.0,0.2206
+relative_temporal,1,0,0.0,0.0
+synonym_substitution,7,0,0.0,0.1261
+typos,7,0,0.0,0.1261
+vague_aggregation,1,0,0.0,0.0
