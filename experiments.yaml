@@ -27,3 +27,16 @@ models:
     model_identifier: Qwen/Qwen2.5-0.5B-Instruct
     hardware_notes: "A100 40GB"
     # No rate_limit = no delays for local models
+
+  - name: llama3.1-8b
+    adapter_type: vllm
+    model_identifier: meta-llama/Llama-3.1-8B
+    hardware_notes: "A100 40GB"
+    # No rate_limit = no delays for local models
+
+  - name: deepseek-coder-v2-lite
+    adapter_type: vllm
+    model_identifier: deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct
+    hardware_notes: "A100 40GB"
+    # No rate_limit = no delays for local models
+    

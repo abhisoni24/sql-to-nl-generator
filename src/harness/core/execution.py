@@ -9,6 +9,7 @@ import uuid
 import sys
 from datetime import datetime
 from typing import List, Dict, Any
+from tqdm.auto import tqdm
 from ..adapters.base import BaseModelAdapter
 from .normalization import normalize_sql
 from .evaluation import Evaluator
@@ -63,20 +64,32 @@ class ExecutionEngine:
         
         print(f"Processing {len(batches)} batches with size {self.batch_size}...")
 
-        # 3. Execution Loop with Rate Limiting
-        for batch_idx, batch in enumerate(batches):
+        # 3. Execution Loop with Rate Limiting and Progress Tracking
+        # Track statistics for progress bar
+        total_processed = 0
+        total_correct = 0
+        
+        # Outer progress bar for batches
+        batch_pbar = tqdm(batches, desc="Processing Batches", unit="batch", position=0)
+        
+        for batch_idx, batch in enumerate(batch_pbar):
             # Apply rate limiting delay before each batch (except first)
             if batch_idx > 0 and self.batch_delay > 0:
-                print(f"  ⏳ Rate limit delay: {self.batch_delay:.1f}s...")
+                batch_pbar.set_postfix_str(f"⏳ Rate limit delay: {self.batch_delay:.1f}s")
                 time.sleep(self.batch_delay)
             
             # Construct full prompts with schema context
             prompt_texts = [self._construct_full_prompt(p['prompt_text']) for p in batch]
             
             # Generate with retry logic for rate limit errors
+            batch_pbar.set_postfix_str("🤖 Generating SQL...")
             raw_outputs = self._generate_with_retry(prompt_texts)
             
+            # Inner progress bar for processing batch items
+            batch_pbar.set_postfix_str("📊 Processing outputs...")
+            
             # Process outputs
+            batch_correct = 0
             for i, raw_output in enumerate(raw_outputs):
                 prompt_item = batch[i]
                 
@@ -88,6 +101,11 @@ class ExecutionEngine:
                 gold_sql = prompt_item.get('sql', '') # Assuming 'sql' key in input
                 
                 eval_result = self.evaluator.evaluate(gold_sql, normalized_sql)
+                
+                # Track accuracy
+                if eval_result.execution_match:
+                    batch_correct += 1
+                    total_correct += 1
                 
                 # Log Record with comprehensive metadata
                 record = {
@@ -129,6 +147,26 @@ class ExecutionEngine:
                 }
                 
                 self._log_record(record)
+            
+            # Update statistics
+            total_processed += len(batch)
+            current_accuracy = (total_correct / total_processed * 100) if total_processed > 0 else 0
+            
+            # Update progress bar with running accuracy
+            batch_pbar.set_postfix_str(
+                f"✓ {batch_correct}/{len(batch)} | Overall: {total_correct}/{total_processed} ({current_accuracy:.1f}%)"
+            )
+        
+        batch_pbar.close()
+        
+        # Print final summary
+        final_accuracy = (total_correct / total_processed * 100) if total_processed > 0 else 0
+        print(f"\n{'='*70}")
+        print(f"Execution Complete!")
+        print(f"  Total Processed: {total_processed}")
+        print(f"  Total Correct: {total_correct}")
+        print(f"  Final Accuracy: {final_accuracy:.2f}%")
+        print(f"{'='*70}")
     
     def _generate_with_retry(self, prompt_texts: List[str]) -> List[str]:
         """
