@@ -8,7 +8,7 @@ try:
     from anthropic import Anthropic
 except ImportError:
     Anthropic = None
-from python_dotenv import load_dotenv
+from dotenv import load_dotenv
 load_dotenv()
 
 class AnthropicAdapter(BaseModelAdapter):
@@ -29,18 +29,21 @@ class AnthropicAdapter(BaseModelAdapter):
         results = []
         for prompt in prompts:
             try:
+                formatted_prompt = self.format_prompt(prompt)
                 response = self.client.messages.create(
                     model=self._model_name,
                     max_tokens=512,
                     temperature=0.0,
                     messages=[
-                        {"role": "user", "content": prompt}
+                        {"role": "user", "content": formatted_prompt}
                     ]
                 )
-                #results.append(response.content)
+                #results.append(response. content)
                 results.append(response.content[0].text)
             except Exception as e:
-                results.append(f"ERROR: {str(e)}")
+                import logging
+                logging.error(f"Anthropic API error: {str(e)}")
+                results.append("")  # Empty result indicates failure
         return results
 
     def model_name(self) -> str:

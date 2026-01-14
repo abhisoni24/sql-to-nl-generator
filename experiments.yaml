@@ -2,18 +2,28 @@
 models:
   - name: gemini-pro
     adapter_type: gemini
-    model_identifier: gemini-2.0-flash-exp
+    model_identifier: gemini-2.5-flash-lite
     decoding_overrides: {}
+    rate_limit:
+      requests_per_minute: 4000  # Gemini API limit
+      max_retries: 2           # Retry on rate limit errors
     
-  # - name: gpt-4
-  #   adapter_type: openai
-  #   model_identifier: gpt-4o
+  - name: gpt-4
+    adapter_type: openai
+    model_identifier: gpt-4o
+    rate_limit:
+      requests_per_minute: 500  # OpenAI has higher limits
+      max_retries: 2
     
-  # - name: claude-3-5
-  #   adapter_type: anthropic
-  #   model_identifier: claude-3-5-sonnet-20241022
+  - name: claude-3-5
+    adapter_type: anthropic
+    model_identifier: claude-haiku-4-5-20251001
+    rate_limit:
+      requests_per_minute: 5  # Anthropic limits
+      max_retries: 2
     
-  # - name: local-mistral
-  #   adapter_type: vllm
-  #   model_identifier: mistralai/Mistral-7B-v0.1
-  #   hardware_notes: "A100 40GB"
+  - name: local-qwen0.5b
+    adapter_type: vllm
+    model_identifier: Qwen/Qwen2.5-0.5B-Instruct
+    hardware_notes: "A100 40GB"
+    # No rate_limit = no delays for local models

@@ -1,0 +1,8 @@
+Total Records            : 53
+Total Queries            : 7
+Models Tested            : 1
+Unique Model Names       : gemini-2.0-flash-exp
+Overall Accuracy         : 3.77%
+Mean Similarity Score    : 0.1739
+Total Failures           : 51
+Failure Rate             : 96.23%

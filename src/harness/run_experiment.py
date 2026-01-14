@@ -57,7 +57,13 @@ def main():
         try:
             adapter = ConfigLoader.get_adapter(experiment)
             
-            engine = ExecutionEngine(adapter, run_id, args.output)
+            # Pass rate limit config to execution engine
+            engine = ExecutionEngine(
+                adapter=adapter,
+                run_id=run_id,
+                output_path=args.output,
+                rate_limit_config=experiment.rate_limit  # New: pass rate limit settings
+            )
             
             # Simple resume logic by filtering processed_ids is best done here 
             # or we rely on the engine? Engine loads from file. 
