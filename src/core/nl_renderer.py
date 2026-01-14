@@ -414,6 +414,7 @@ class SQLToNLRenderer:
         elif isinstance(expr, exp.Literal):
             val = str(expr.this)
             # RELATIVE_TEMPORAL check
+            # yet to refine this check and implementation
             if self.config.is_active(PerturbationType.RELATIVE_TEMPORAL):
                 # Heuristic: simplistic date check
                 if len(val) >= 10 and val[0:4].isdigit() and '-' in val:
