@@ -8,6 +8,8 @@ try:
     from anthropic import Anthropic
 except ImportError:
     Anthropic = None
+from python_dotenv import load_dotenv
+load_dotenv()
 
 class AnthropicAdapter(BaseModelAdapter):
     """Adapter for Anthropic Claude models."""
@@ -17,9 +19,9 @@ class AnthropicAdapter(BaseModelAdapter):
             raise ImportError("anthropic package is required for AnthropicAdapter")
 
         self._model_name = model_name
-        self.api_key = os.getenv("ANTHROPIC_API_KEY")
+        self.api_key = os.getenv("CLAUDE_API_KEY")
         if not self.api_key:
-            raise ValueError("ANTHROPIC_API_KEY not found in environment.")
+            raise ValueError("CLAUDE_API_KEY not found in environment.")
             
         self.client = Anthropic(api_key=self.api_key)
 
@@ -35,6 +37,7 @@ class AnthropicAdapter(BaseModelAdapter):
                         {"role": "user", "content": prompt}
                     ]
                 )
+                #results.append(response.content)
                 results.append(response.content[0].text)
             except Exception as e:
                 results.append(f"ERROR: {str(e)}")

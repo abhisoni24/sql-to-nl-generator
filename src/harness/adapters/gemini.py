@@ -7,15 +7,17 @@ from typing import List, Dict, Any
 from .base import BaseModelAdapter
 from google import genai
 from google.genai import types
+from python_dotenv import load_dotenv
+load_dotenv()
 
 class GeminiAdapter(BaseModelAdapter):
     """Adapter for Google Gemini models via Google GenAI SDK."""
 
     def __init__(self, model_name: str = "gemini-2.0-flash-exp"):
         self._model_name = model_name
-        self.api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        self.api_key = os.getenv("GEMINI_API_KEY")
         if not self.api_key:
-            raise ValueError("GEMINI_API_KEY or GOOGLE_API_KEY not found in environment.")
+            raise ValueError("GEMINI_API_KEY not found in environment.")
         
         # Initialize client
         self.client = genai.Client(api_key=self.api_key)
