@@ -1,0 +1,5 @@
+model_name,Total Tests,Correct,Accuracy,Avg Similarity,Std Similarity,Total Failures
+Qwen/Qwen2.5-0.5B-Instruct,53,10,18.87,0.5574,0.3865,43
+claude-haiku-4-5-20251001,53,21,39.62,0.9055,0.1017,32
+gemini-2.5-flash-lite,53,28,52.83,0.9164,0.0843,25
+gpt-4o,53,25,47.17,0.8864,0.1981,28
