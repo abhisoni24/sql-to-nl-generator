@@ -1,0 +1,5 @@
+Experiment,Model,Method,Mean Length,Median Length,Std Length,Min Length,Max Length
+gemini_systematic,gemini,systematic,14.465031956735496,14.0,5.219301691401427,5,30
+gemini_llm,gemini,llm,15.480808080808082,16.0,5.339462653978012,5,30
+deepseek_systematic,deepseek,systematic,14.488029701702727,14.0,5.237189928578785,5,30
+deepseek_llm,deepseek,llm,14.671478131582209,13.0,6.200063994844213,2,42

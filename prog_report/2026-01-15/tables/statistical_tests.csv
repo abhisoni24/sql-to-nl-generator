@@ -1,0 +1,4 @@
+Test,Statistic,P-Value,Effect Size (d),Significant
+Gemini vs DeepSeek (Systematic),123.8678,0.0000e+00,1.3759,***
+Systematic vs LLM (Gemini),-17.6243,5.2628e-69,N/A,***
+Systematic vs LLM (DeepSeek),-7.1139,1.1521e-12,N/A,***

@@ -1,0 +1,19 @@
+Experiment,Model,Method,Failure Type,Count,Percentage
+gemini_systematic,gemini,systematic,none,9874,60.68092428711898
+gemini_systematic,gemini,systematic,mismatch,6369,39.14085545722713
+gemini_systematic,gemini,systematic,parse_error,25,0.15363815142576204
+gemini_systematic,gemini,systematic,empty,4,0.024582104228121928
+gemini_systematic,gemini,systematic,success,9874,60.68092428711898
+gemini_llm,gemini,llm,none,2600,65.65656565656566
+gemini_llm,gemini,llm,mismatch,1344,33.939393939393945
+gemini_llm,gemini,llm,parse_error,14,0.35353535353535354
+gemini_llm,gemini,llm,empty,2,0.050505050505050504
+gemini_llm,gemini,llm,success,2600,65.65656565656566
+deepseek_systematic,deepseek,systematic,parse_error,7723,49.43669184483421
+deepseek_systematic,deepseek,systematic,none,4344,27.806938932275
+deepseek_systematic,deepseek,systematic,mismatch,3555,22.756369222890797
+deepseek_systematic,deepseek,systematic,success,4344,27.806938932275
+deepseek_llm,deepseek,llm,parse_error,6880,42.6217321273696
+deepseek_llm,deepseek,llm,mismatch,6091,37.73386197497212
+deepseek_llm,deepseek,llm,none,3171,19.64440589765828
+deepseek_llm,deepseek,llm,success,3171,19.64440589765828
