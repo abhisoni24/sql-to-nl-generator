@@ -7,9 +7,11 @@ import os
 import time
 import uuid
 import sys
+import threading
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from tqdm.auto import tqdm
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from ..adapters.base import BaseModelAdapter
 from .normalization import normalize_sql
 from .evaluation import Evaluator
@@ -17,6 +19,60 @@ from .evaluation import Evaluator
 # Import schema for prompt construction
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 from src.core.schema import SCHEMA, FOREIGN_KEYS
+
+
+class TokenBucket:
+    """
+    Token bucket rate limiter for precise rate limiting.
+    Allows bursts while maintaining average rate over time.
+    """
+    
+    def __init__(self, rate_per_minute: float, max_tokens: Optional[float] = None):
+        """
+        Args:
+            rate_per_minute: Maximum requests per minute
+            max_tokens: Maximum bucket capacity (defaults to rate_per_minute)
+        """
+        self.rate_per_second = rate_per_minute / 60.0
+        self.max_tokens = max_tokens or rate_per_minute
+        self.tokens = self.max_tokens
+        self.last_update = time.time()
+        self.lock = threading.Lock()
+    
+    def acquire(self, tokens: int = 1) -> float:
+        """
+        Acquire tokens from the bucket, blocking if necessary.
+        
+        Args:
+            tokens: Number of tokens to acquire
+            
+        Returns:
+            Time waited in seconds
+        """
+        wait_time = 0.0
+        
+        with self.lock:
+            now = time.time()
+            elapsed = now - self.last_update
+            
+            # Refill bucket based on elapsed time
+            self.tokens = min(self.max_tokens, self.tokens + elapsed * self.rate_per_second)
+            self.last_update = now
+            
+            # Check if we have enough tokens
+            if self.tokens >= tokens:
+                self.tokens -= tokens
+            else:
+                # Calculate wait time for required tokens
+                tokens_needed = tokens - self.tokens
+                wait_time = tokens_needed / self.rate_per_second
+                self.tokens = 0
+        
+        # Wait outside the lock to allow other threads to check
+        if wait_time > 0:
+            time.sleep(wait_time)
+        
+        return wait_time
 
 class ExecutionEngine:
     
@@ -52,121 +108,162 @@ class ExecutionEngine:
             self.batch_size = 32
         else: # API
             self.batch_size = 5
+        
+        # Concurrent execution settings
+        self.max_concurrent = self.rate_limit_config.get('max_concurrent_requests', None)
+        
+        # Initialize token bucket if rate limiting is enabled
+        self.token_bucket = None
+        if self.requests_per_minute:
+            self.token_bucket = TokenBucket(rate_per_minute=self.requests_per_minute)
+            
+            # Set default max_concurrent based on rate limit if not specified
+            if self.max_concurrent is None:
+                # Conservative default: allow enough concurrency to reach rate limit
+                # but not so much that we overwhelm the API
+                self.max_concurrent = min(100, int(self.requests_per_minute / 10))
+            
+            print(f"🚀 Concurrent execution enabled: {self.max_concurrent} max concurrent requests")
+        else:
+            # No rate limiting means we can use higher concurrency for local models
+            if self.max_concurrent is None:
+                self.max_concurrent = 32  # Good default for local models
+            print(f"🚀 Concurrent execution enabled: {self.max_concurrent} max concurrent requests (no rate limit)")
 
     def execute_experiment(self, prompts_path: str):
-        """End-to-end execution: load, batch, generate, normalize, evaluate, log."""
+        """End-to-end execution: load, generate concurrently, normalize, evaluate, log."""
         # 1. Load Prompts (extracts all perturbations)
         prompts_data = self._load_prompts(prompts_path)
         print(f"Loaded {len(prompts_data)} prompts from {prompts_path}")
 
-        # 2. Batching
-        batches = [prompts_data[i:i + self.batch_size] for i in range(0, len(prompts_data), self.batch_size)]
-        
-        print(f"Processing {len(batches)} batches with size {self.batch_size}...")
+        # 2. Execute with concurrency
+        print(f"Processing {len(prompts_data)} prompts with max {self.max_concurrent} concurrent requests...")
 
-        # 3. Execution Loop with Rate Limiting and Progress Tracking
-        # Track statistics for progress bar
+        # Track statistics for progress tracking
         total_processed = 0
         total_correct = 0
         
-        # Outer progress bar for batches
-        batch_pbar = tqdm(batches, desc="Processing Batches", unit="batch", position=0)
+        # Thread-safe counter and lock for statistics
+        stats_lock = threading.Lock()
         
-        for batch_idx, batch in enumerate(batch_pbar):
-            # Apply rate limiting delay before each batch (except first)
-            if batch_idx > 0 and self.batch_delay > 0:
-                batch_pbar.set_postfix_str(f"⏳ Rate limit delay: {self.batch_delay:.1f}s")
-                time.sleep(self.batch_delay)
+        def process_single_prompt(prompt_item: Dict[str, Any]) -> Dict[str, Any]:
+            """Process a single prompt: generate, normalize, evaluate, return record."""
+            nonlocal total_processed, total_correct
             
-            # Construct full prompts with schema context
-            prompt_texts = [self._construct_full_prompt(p['prompt_text']) for p in batch]
+            # Rate limiting: acquire token before making request
+            if self.token_bucket:
+                self.token_bucket.acquire(1)
             
-            # Generate with retry logic for rate limit errors
-            batch_pbar.set_postfix_str("🤖 Generating SQL...")
-            raw_outputs = self._generate_with_retry(prompt_texts)
+            # Construct full prompt with schema context
+            prompt_text = self._construct_full_prompt(prompt_item['prompt_text'])
             
-            # Inner progress bar for processing batch items
-            batch_pbar.set_postfix_str("📊 Processing outputs...")
+            # Generate (adapter handles single prompt)
+            try:
+                raw_output = self.adapter.generate([prompt_text])[0]
+            except Exception as e:
+                import logging
+                logging.error(f"Generation failed for prompt {prompt_item.get('prompt_id', 'unknown')}: {e}")
+                raw_output = ""
             
-            # Process outputs
-            batch_correct = 0
-            for i, raw_output in enumerate(raw_outputs):
-                prompt_item = batch[i]
-                
-                # Normalize
-                normalized_sql = normalize_sql(raw_output)
-                
-                # Evaluate
-                # Need gold sql from prompt item
-                gold_sql = prompt_item.get('sql', '') # Assuming 'sql' key in input
-                
-                eval_result = self.evaluator.evaluate(gold_sql, normalized_sql)
-                
-                # Track accuracy
+            # Normalize
+            normalized_sql = normalize_sql(raw_output)
+            
+            # Evaluate
+            gold_sql = prompt_item.get('sql', '')
+            eval_result = self.evaluator.evaluate(gold_sql, normalized_sql)
+            
+            # Update statistics (thread-safe)
+            with stats_lock:
+                total_processed += 1
                 if eval_result.execution_match:
-                    batch_correct += 1
                     total_correct += 1
-                
-                # Log Record with comprehensive metadata
-                record = {
-                    # Run and model identification
-                    "run_id": self.run_id,
-                    "model_name": self.adapter.model_name(),
-                    "model_family": self.adapter.model_family(),
-                    
-                    # Prompt identification (now includes perturbation info)
-                    "prompt_id": prompt_item.get('prompt_id', str(uuid.uuid4())),
-                    "prompt_text": prompt_item['prompt_text'],
-                    
-                    # NEW: Perturbation tracking
-                    "perturbation_type": prompt_item.get('perturbation_type', 'unknown'),
-                    "perturbation_id": prompt_item.get('perturbation_id', -1),
-                    
-                    # NEW: Query characteristics
-                    "query_complexity": prompt_item.get('complexity', 'unknown'),
-                    "tables_involved": prompt_item.get('tables', []),
-                    
-                    # NEW: Gold standard for offline analysis
-                    "gold_sql": gold_sql,
-                    
-                    # Generation outputs
-                    "raw_output": raw_output,
-                    "normalized_sql": normalized_sql,
-                    
-                    # Evaluation results
-                    "evaluation_result": {
-                        "correctness": eval_result.execution_match,
-                        "similarity_score": eval_result.similarity_score,
-                        "failure_type": eval_result.failure_type
-                    },
-                    
-                    # Configuration and metadata
-                    "decoding_config": self.adapter.decoding_config(),
-                    "metadata": prompt_item.get('metadata', {}),
-                    "timestamp": datetime.utcnow().isoformat()
-                }
-                
-                self._log_record(record)
             
-            # Update statistics
-            total_processed += len(batch)
-            current_accuracy = (total_correct / total_processed * 100) if total_processed > 0 else 0
+            # Build record
+            record = {
+                # Run and model identification
+                "run_id": self.run_id,
+                "model_name": self.adapter.model_name(),
+                "model_family": self.adapter.model_family(),
+                
+                # Prompt identification (now includes perturbation info)
+                "prompt_id": prompt_item.get('prompt_id', str(uuid.uuid4())),
+                "prompt_text": prompt_item['prompt_text'],
+                
+                # Perturbation tracking
+                "perturbation_type": prompt_item.get('perturbation_type', 'unknown'),
+                "perturbation_id": prompt_item.get('perturbation_id', -1),
+                
+                # Query characteristics
+                "query_complexity": prompt_item.get('complexity', 'unknown'),
+                "tables_involved": prompt_item.get('tables', []),
+                
+                # Gold standard for offline analysis
+                "gold_sql": gold_sql,
+                
+                # Generation outputs
+                "raw_output": raw_output,
+                "normalized_sql": normalized_sql,
+                
+                # Evaluation results
+                "evaluation_result": {
+                    "correctness": eval_result.execution_match,
+                    "similarity_score": eval_result.similarity_score,
+                    "failure_type": eval_result.failure_type
+                },
+                
+                # Configuration and metadata
+                "decoding_config": self.adapter.decoding_config(),
+                "metadata": prompt_item.get('metadata', {}),
+                "timestamp": datetime.utcnow().isoformat()
+            }
             
-            # Update progress bar with running accuracy
-            batch_pbar.set_postfix_str(
-                f"✓ {batch_correct}/{len(batch)} | Overall: {total_correct}/{total_processed} ({current_accuracy:.1f}%)"
-            )
+            return record
         
-        batch_pbar.close()
+        # Execute with ThreadPoolExecutor
+        start_time = time.time()
+        
+        with ThreadPoolExecutor(max_workers=self.max_concurrent) as executor:
+            # Submit all tasks
+            future_to_prompt = {
+                executor.submit(process_single_prompt, prompt): prompt 
+                for prompt in prompts_data
+            }
+            
+            # Process completed tasks with progress bar
+            with tqdm(total=len(prompts_data), desc="Processing Prompts", unit="prompt") as pbar:
+                for future in as_completed(future_to_prompt):
+                    try:
+                        record = future.result()
+                        self._log_record(record)
+                        
+                        # Update progress bar with current accuracy
+                        current_accuracy = (total_correct / total_processed * 100) if total_processed > 0 else 0
+                        pbar.set_postfix_str(f"Correct: {total_correct}/{total_processed} ({current_accuracy:.1f}%)")
+                        pbar.update(1)
+                        
+                    except Exception as e:
+                        import logging
+                        logging.error(f"Task failed: {e}")
+                        pbar.update(1)
+        
+        # Calculate throughput
+        elapsed_time = time.time() - start_time
+        throughput_rpm = (len(prompts_data) / elapsed_time) * 60 if elapsed_time > 0 else 0
         
         # Print final summary
         final_accuracy = (total_correct / total_processed * 100) if total_processed > 0 else 0
-        print(f"\n{'='*70}")
+        print(f"\\n{'='*70}")
         print(f"Execution Complete!")
         print(f"  Total Processed: {total_processed}")
         print(f"  Total Correct: {total_correct}")
         print(f"  Final Accuracy: {final_accuracy:.2f}%")
+        print(f"  Time Elapsed: {elapsed_time:.1f}s")
+        print(f"  Throughput: {throughput_rpm:.1f} requests/minute")
+        if self.requests_per_minute:
+            utilization = (throughput_rpm / self.requests_per_minute * 100)
+            print(f"  Rate Limit Utilization: {utilization:.1f}%")
         print(f"{'='*70}")
+
     
     def _generate_with_retry(self, prompt_texts: List[str]) -> List[str]:
         """

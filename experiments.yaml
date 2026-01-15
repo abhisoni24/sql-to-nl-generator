@@ -7,6 +7,7 @@ models:
     rate_limit:
       requests_per_minute: 4000  # Gemini API limit
       max_retries: 2           # Retry on rate limit errors
+      max_concurrent_requests: 100  # Allow up to 100 concurrent requests
     
   - name: gpt-4o
     adapter_type: openai
@@ -14,6 +15,7 @@ models:
     rate_limit:
       requests_per_minute: 500  # OpenAI has higher limits
       max_retries: 2
+      max_concurrent_requests: 50  # Allow up to 50 concurrent requests
     
   - name: claude-4.5
     adapter_type: anthropic

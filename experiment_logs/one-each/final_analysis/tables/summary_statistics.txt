@@ -1,8 +1,0 @@
-Total Records            : 212
-Total Queries            : 7
-Models Tested            : 4
-Unique Model Names       : gemini-2.5-flash-lite, gpt-4o, claude-haiku-4-5-20251001, Qwen/Qwen2.5-0.5B-Instruct
-Overall Accuracy         : 39.62%
-Mean Similarity Score    : 0.8164
-Total Failures           : 128
-Failure Rate             : 60.38%
