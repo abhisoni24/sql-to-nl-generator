@@ -1,0 +1,8 @@
+Total Records            : 16142
+Total Queries            : 2100
+Models Tested            : 1
+Unique Model Names       : deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct
+Overall Accuracy         : 19.64%
+Mean Similarity Score    : 0.4742
+Total Failures           : 12971
+Failure Rate             : 80.36%
