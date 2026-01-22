@@ -280,8 +280,8 @@ class ExecutionEngine:
                 return self.adapter.generate(prompt_texts)
             except Exception as e:
                 error_str = str(e)
-                # Check if it's a rate limit error (429 or RESOURCE_EXHAUSTED)
-                is_rate_limit = '429' in error_str or 'RESOURCE_EXHAUSTED' in error_str or 'rate' in error_str.lower()
+                # Check if it's a rate limit error (429 or RESOURCE_EXHAUSTED) or Service Unavailable (503)
+                is_rate_limit = '429' in error_str or 'RESOURCE_EXHAUSTED' in error_str or 'rate' in error_str.lower() or '503' in error_str
                 
                 if is_rate_limit and attempt < self.max_retries:
                     # Exponential backoff: 2, 4, 8 seconds
@@ -370,7 +370,7 @@ class ExecutionEngine:
                     perturbed_prompt = pert.get('perturbed_nl_prompt')
                     if perturbed_prompt:
                         test_cases.append({
-                            'prompt_id': f"{query_id}_pert_{pert['perturbation_id']}",
+                            'prompt_id': f"{query_id}_pert_{pert.get('perturbation_id', pert.get('perturbation_name', 'unknown'))}",
                             'prompt_text': perturbed_prompt,
                             'sql': gold_sql,  # Same gold SQL for all perturbations
                             'complexity': complexity,
@@ -384,6 +384,28 @@ class ExecutionEngine:
                                 'original_prompt': original_prompt
                             }
                         })
+            
+            # 3. Add compound perturbation
+            compound = perturbations.get('compound_perturbation', {})
+            compound_prompt = compound.get('perturbed_nl_prompt')
+            
+            if compound_prompt:
+                test_cases.append({
+                    'prompt_id': f"{query_id}_compound",
+                    'prompt_text': compound_prompt,
+                    'sql': gold_sql,
+                    'complexity': complexity,
+                    'tables': tables,
+                    'perturbation_type': 'compound',
+                    'perturbation_id': 'compound',
+                    'metadata': {
+                        'query_id': query_id,
+                        'is_perturbed': True,
+                        'changes_made': compound.get('changes_made', ''),
+                        'original_prompt': original_prompt,
+                        'perturbations_applied': compound.get('perturbations_applied', [])
+                    }
+                })
         
         else:
             # Fallback for simple format without perturbations

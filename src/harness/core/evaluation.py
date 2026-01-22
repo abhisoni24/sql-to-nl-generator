@@ -39,7 +39,7 @@ class Evaluator:
         
         # Thresholds for semantic equivalence
         self.PERFECT_SIMILARITY_THRESHOLD = 0.98  # Near-perfect TED score
-        self.HIGH_SIMILARITY_THRESHOLD = 0.90     # High similarity (lowered from 0.92 - Priority 3)
+        self.HIGH_SIMILARITY_THRESHOLD = 0.90     # High similarity
 
     def evaluate(self, gold_sql: str, gen_sql: str) -> EvaluationResult:
         """
@@ -171,7 +171,7 @@ class Evaluator:
             logging.debug(f"Semantic normalization failed: {e}")
         
         # Strategy 3: High similarity with known acceptable variations
-        # If TED score is high (>0.92) and only common variations differ
+        # If TED score is high (>0.90) and only common variations differ
         if ted_score >= self.HIGH_SIMILARITY_THRESHOLD:
             if self._only_acceptable_differences(gold_sql, gen_sql):
                 return True

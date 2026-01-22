@@ -13,116 +13,81 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'
 from sqlglot import parse_one
 from src.core.nl_renderer import SQLToNLRenderer, PerturbationType, PerturbationConfig
 
-# Constants
 INPUT_FILE = './dataset/current/nl_social_media_queries.json'
 OUTPUT_FILE = './dataset/current/nl_social_media_queries_systematic.json'
 
-# Descriptions for changes made
 PERTURBATION_DESCRIPTIONS = {
-    PerturbationType.UNDER_SPECIFICATION: "Omitted explicit table or column names.",
-    PerturbationType.IMPLICIT_BUSINESS_LOGIC: "Replaced specific filter conditions with specific business logic terms.",
-    PerturbationType.SYNONYM_SUBSTITUTION: "Replaced schema terms with synonyms.",
-    PerturbationType.INCOMPLETE_JOINS: "Replaced explicit SQL JOIN syntax with vague natural language connectors.",
-    PerturbationType.RELATIVE_TEMPORAL: "Replaced absolute dates with relative terms.",
-    PerturbationType.AMBIGUOUS_PRONOUNS: "Replaced schema references with ambiguous pronouns.",
-    PerturbationType.VAGUE_AGGREGATION: "Replaced precise aggregate functions with vague terms.",
-    PerturbationType.COLUMN_VARIATIONS: "Modified column naming conventions.",
-    PerturbationType.MISSING_WHERE_DETAILS: "Used subjective terms in WHERE clauses.",
-    PerturbationType.TYPOS: "Injected naturalistic typos."
+    PerturbationType.OMIT_OBVIOUS_CLAUSES: "Removed explicit SQL clause keywords.",
+    PerturbationType.SYNONYM_SUBSTITUTION: "Replaced query action verbs with synonyms.",
+    PerturbationType.VERBOSITY_VARIATION: "Inserted conversational fillers.",
+    PerturbationType.OPERATOR_AGGREGATE_VARIATION: "Varied operator/aggregate format.",
+    PerturbationType.TYPOS: "Injected keyboard typos.",
+    PerturbationType.COMMENT_ANNOTATIONS: "Added SQL comments/notes.",
+    PerturbationType.TEMPORAL_EXPRESSION_VARIATION: "Used relative temporal terms.",
+    PerturbationType.PUNCTUATION_VARIATION: "Modified sentence rhythm.",
+    PerturbationType.URGENCY_QUALIFIERS: "Added urgency markers.",
+    PerturbationType.MIXED_SQL_NL: "Blended raw SQL keywords.",
+    PerturbationType.TABLE_COLUMN_SYNONYMS: "Used human-centric schema synonyms.",
+    PerturbationType.INCOMPLETE_JOIN_SPEC: "Omitted explicit JOIN/ON syntax.",
+    PerturbationType.AMBIGUOUS_PRONOUNS: "Replaced one reference with it/that."
 }
 
 def main():
-    print(f"Loading {INPUT_FILE}...")
+    if not os.path.exists(INPUT_FILE):
+        print(f"Error: {INPUT_FILE} not found.")
+        return
+
     with open(INPUT_FILE, 'r') as f:
         queries = json.load(f)
-    print(f"Loaded {len(queries)} queries.")
 
     output_data = []
-    
-    # Initialize basic renderer for checks
     base_renderer = SQLToNLRenderer()
     
-    print("Generating systematic perturbations...")
+    print(f"Processing {len(queries)} queries for systematic perturbations...")
     
     for i, query_item in enumerate(queries):
         sql = query_item['sql']
-        nl_prompt_original = query_item.get('nl_prompt', '')
         
-        # Structure for output item
         output_item = {
             "id": query_item.get('id', i+1),
-            "complexity": query_item.get('complexity', 'unknown'),
             "sql": sql,
-            "tables": query_item.get('tables', []),
             "generated_perturbations": {
-                "original": {
-                    "nl_prompt": nl_prompt_original,
-                },
+                "original": {"nl_prompt": query_item.get('nl_prompt', '')},
                 "single_perturbations": [],
                 "metadata": {}
             }
         }
         
-        # Parse SQL once
         try:
             ast = parse_one(sql, dialect='mysql')
-        except Exception as e:
-            print(f"Error parsing SQL for query {i}: {e}")
-            output_data.append(output_item)
+        except Exception:
             continue
-            
+
         applicable_count = 0
-        not_applicable_count = 0
-        
-        # Iterate through all perturbation types
-        for p_id, p_type in enumerate(PerturbationType, 1):
-            is_applicable = base_renderer.is_applicable(ast, p_type)
+        for p_type in PerturbationType:
+            is_app = base_renderer.is_applicable(ast, p_type)
+            entry = {"perturbation_name": p_type.value, "applicable": is_app, "perturbed_nl_prompt": None}
             
-            perturbation_entry = {
-                "perturbation_id": p_id,
-                "perturbation_name": p_type.value,
-                "applicable": is_applicable,
-                "perturbed_nl_prompt": None,
-                "changes_made": None,
-                "reason_not_applicable": None
-            }
-            
-            if is_applicable:
-                # Generate perturbed prompt
-                config = PerturbationConfig(active_perturbations={p_type}, seed=i*100 + p_id)
-                renderer = SQLToNLRenderer(config)
+            if is_app:
+                config = PerturbationConfig(active_perturbations={p_type}, seed=i*100)
                 try:
-                    perturbed_prompt = renderer.render(ast)
-                    perturbation_entry["perturbed_nl_prompt"] = perturbed_prompt
-                    perturbation_entry["changes_made"] = PERTURBATION_DESCRIPTIONS.get(p_type, "Applied perturbation.")
+                    entry["perturbed_nl_prompt"] = SQLToNLRenderer(config).render(ast)
+                    entry["changes_made"] = PERTURBATION_DESCRIPTIONS[p_type]
                     applicable_count += 1
                 except Exception as e:
-                    perturbation_entry["applicable"] = False
-                    perturbation_entry["reason_not_applicable"] = f"Render error: {str(e)}"
-                    not_applicable_count += 1
-            else:
-                perturbation_entry["reason_not_applicable"] = "Logic check failed."
-                not_applicable_count += 1
-                
-            output_item["generated_perturbations"]["single_perturbations"].append(perturbation_entry)
+                    entry["applicable"] = False
             
-        # Update metadata
-        output_item["generated_perturbations"]["metadata"] = {
-            "total_applicable_perturbations": applicable_count,
-            "total_not_applicable": not_applicable_count,
-            "applicability_rate": applicable_count / len(PerturbationType) if len(PerturbationType) > 0 else 0
-        }
-        
+            output_item["generated_perturbations"]["single_perturbations"].append(entry)
+            
+        output_item["generated_perturbations"]["metadata"]["total_applicable"] = applicable_count
         output_data.append(output_item)
         
-        if (i+1) % 100 == 0:
-            print(f"Processed {i+1} queries...")
+        if (i+1) % 50 == 0: print(f"Progress: {i+1} queries...")
             
-    print(f"Saving to {OUTPUT_FILE}...")
+    os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
     with open(OUTPUT_FILE, 'w') as f:
         json.dump(output_data, f, indent=2)
-        
-    print("Done!")
+    print(f"Dataset generated at {OUTPUT_FILE}")
 
 if __name__ == "__main__":
     main()

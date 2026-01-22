@@ -19,7 +19,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"
 
 # Constants
 INPUT_FILE = "./dataset/current/nl_social_media_queries.json"
-OUTPUT_FILE = "./dataset/current/nl_social_mediia_queries_llm_perturbedd.json"
+OUTPUT_FILE = "./dataset/current/nl_social_media_queries_llm_perturbed.json"
 MODEL_NAME = "gemini-2.5-flash-lite"
 CACHE_TTL = "12600s"
 DEFAULT_MAX_RPM = 4000
