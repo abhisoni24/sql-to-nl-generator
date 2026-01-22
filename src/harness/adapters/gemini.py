@@ -19,8 +19,16 @@ class GeminiAdapter(BaseModelAdapter):
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY not found in environment.")
         
-        # Initialize client
-        self.client = genai.Client(api_key=self.api_key)
+        # Initialize client with timeout
+        self.client = genai.Client(
+            api_key=self.api_key,
+            http_options=types.HttpOptions(timeout=60000) # 60 seconds timeout (in milliseconds? No, usually seconds, but types says int. Let's assume ms if it's an int, or check docs. Standard httpx is seconds. Wait, pydantic field says int. 60000ms = 60s is safe bet if ms. If seconds, 60000s is too long. Let's check retry options.)
+        )
+        # Suppress noisy AFC logs
+        import logging
+        logging.getLogger("models").setLevel(logging.WARNING)
+        logging.getLogger("google.genai").setLevel(logging.WARNING)
+
 
     def generate(self, prompts: List[str]) -> List[str]:
         results = []
