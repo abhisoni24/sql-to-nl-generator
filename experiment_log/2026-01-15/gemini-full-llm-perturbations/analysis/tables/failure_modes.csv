@@ -1,0 +1,4 @@
+Failure Type,Count,Percentage
+mismatch,1344,33.94
+parse_error,14,0.35
+empty,2,0.05

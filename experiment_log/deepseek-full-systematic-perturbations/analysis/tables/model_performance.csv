@@ -1,2 +1,0 @@
-model_name,Total Tests,Correct,Accuracy,Avg Similarity,Std Similarity,Total Failures
-deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct,15622,4344,27.81,0.4391,0.4518,11278

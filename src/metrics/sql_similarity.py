@@ -144,15 +144,6 @@ class SQLSimilarity:
         total_nodes = self._count(gold_node) + self._count(gen_node)
         if total_nodes == 0: return 1.0
         
-        # Max distance is bounded by max(nodes1, nodes2) roughly? 
-        # Actually standard edit distance logic: max cost is max(len1, len2). 
-        # Normalizing by sum(len) is a safe conservative overlap metric.
-        # Score = 1 - (dist / total_nodes) might be too punitive? 
-        # 1 - dist / (nodes1 + nodes2) means 0.5 similarity for disjoint trees?
-        # Standard: 1 - dist / max(nodes1, nodes2)? 
-        # Let's stick to the user formula request or a sensible default.
-        # User requested: "1 - (cost / total_nodes)" in the skeleton. 
-        # Wait, the skeleton says: `1 - (cost / total_nodes)`
         
         return 1.0 - (dist / total_nodes)
 

@@ -1,8 +1,0 @@
-Total Records            : 3960
-Total Queries            : 449
-Models Tested            : 1
-Unique Model Names       : gemini-2.5-flash-lite
-Overall Accuracy         : 65.66%
-Mean Similarity Score    : 0.9425
-Total Failures           : 1360
-Failure Rate             : 34.34%

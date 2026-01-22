@@ -424,9 +424,14 @@ class ExecutionEngine:
         
         prompt = f"""{schema_text}
 
-Generate a SQL query for the following request. Return ONLY the SQL statement, no explanations or markdown formatting.
+You are a SQL expert. Generate the exact raw SQL query to handle the following task:
 
-Request: {nl_query}
+Task: {nl_query}
+
+Requirements:
+1. Return ONLY the SQL query, no explanations or additional text
+2. Do not include markdown formatting or code blocks
+3. Generate syntactically correct MySQL-compatible SQL
 
 SQL:"""
         

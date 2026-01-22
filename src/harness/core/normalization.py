@@ -88,7 +88,7 @@ def normalize_ast(ast):
     
     Transformations:
     - INNER JOIN -> JOIN (they're identical)
-    - Remove redundant table qualifiers in single-table queries
+    - SELECT table.* -> SELECT * in single-table queries
     - Normalize function names (DATE_SUB vs datetime arithmetic)
     """
     from sqlglot import exp
@@ -99,23 +99,62 @@ def normalize_ast(ast):
         if join.args.get('kind') == 'INNER':
             join.args['kind'] = None  # Default JOIN
     
-    # Normalize SELECT *
+    # PRIORITY 1 FIX: Normalize SELECT table.* to SELECT * in single-table queries
     for select in ast.find_all(exp.Select):
-        # Handle SELECT table.* same as SELECT *
-        if select.expressions:
-            for i, expr in enumerate(select.expressions):
-                if isinstance(expr, exp.Star):
-                    # SELECT * or SELECT table.* - normalize to just *
-                    if expr.args.get('table'):
-                        expr.args['table'] = None
+        # Check if this is a single-table query (no joins)
+        from_clause = select.args.get('from')
+        if from_clause:
+            joins = select.args.get('joins')
+            is_single_table = not joins or len(joins) == 0
+            
+            if is_single_table and select.expressions:
+                # In single-table context, normalize SELECT table.* to SELECT *
+                for expr in select.expressions:
+                    if isinstance(expr, exp.Star):
+                        # Remove table qualifier
+                        expr.set('table', None)
     
     return ast
+
+
+def normalize_mysql_functions(sql: str) -> str:
+    """
+    PRIORITY 2: Normalize MySQL-specific function equivalences.
+    
+    Transformations:
+    - DATE_SUB(NOW(), INTERVAL X unit) -> NOW() - INTERVAL X unit
+    - DATE_ADD(NOW(), INTERVAL X unit) -> NOW() + INTERVAL X unit
+    """
+    # DATE_SUB(NOW(), INTERVAL X unit) -> NOW() - INTERVAL X unit
+    sql = re.sub(
+        r'DATE_SUB\s*\(\s*NOW\s*\(\s*\)\s*,\s*INTERVAL\s+([^)]+)\)',
+        r'NOW() - INTERVAL \1',
+        sql,
+        flags=re.IGNORECASE
+    )
+    
+    # DATE_ADD(NOW(), INTERVAL X unit) -> NOW() + INTERVAL X unit  
+    sql = re.sub(
+        r'DATE_ADD\s*\(\s*NOW\s*\(\s*\)\s*,\s*INTERVAL\s+([^)]+)\)',
+        r'NOW() + INTERVAL \1',
+        sql,
+        flags=re.IGNORECASE
+    )
+    
+    return sql
 
 
 def post_process_normalization(sql: str) -> str:
     """
     Apply final text-level normalizations after AST conversion.
     """
+    # PRIORITY 2: Normalize MySQL function equivalences first
+    sql = normalize_mysql_functions(sql)
+    
+    # PRIORITY 1 (text-level fallback): Normalize SELECT table.* to SELECT *
+    # Handles cases where AST normalization doesn't persist through sqlglot rendering
+    sql = re.sub(r'SELECT\s+([a-zA-Z0-9_]+)\.\*\s+FROM', r'SELECT * FROM', sql, flags=re.IGNORECASE)
+    
     # Normalize whitespace
     sql = re.sub(r'\\s+', ' ', sql)
     

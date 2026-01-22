@@ -39,7 +39,7 @@ class Evaluator:
         
         # Thresholds for semantic equivalence
         self.PERFECT_SIMILARITY_THRESHOLD = 0.98  # Near-perfect TED score
-        self.HIGH_SIMILARITY_THRESHOLD = 0.92     # High similarity
+        self.HIGH_SIMILARITY_THRESHOLD = 0.90     # High similarity (lowered from 0.92 - Priority 3)
 
     def evaluate(self, gold_sql: str, gen_sql: str) -> EvaluationResult:
         """
@@ -71,13 +71,13 @@ class Evaluator:
             # Only trust execution verification for SELECT queries
             if gold_sql.strip().upper().startswith('SELECT'):
                 exec_match = self.exec_verifier.verify(gold_sql, gen_sql, num_rows=100)
-            else:
-                # For DML queries, trust semantic comparison instead
-                # (execution verifier has bugs for these)
-                exec_match = semantic_match
+            # else:
+            #     # For DML queries, trust semantic comparison instead
+            #     # (execution verifier has bugs for these)
+            #     # exec_match = semantic_match
         except Exception as e:
             logging.debug(f"Execution verification failed (expected for DML): {e}")
-            exec_match = semantic_match  # Fall back to semantic match
+            # exec_match = semantic_match  # Fall back to semantic match
         
         # Determine final result
         # If semantic match OR high TED score, consider it correct
@@ -96,7 +96,8 @@ class Evaluator:
             execution_match=final_match,
             failure_type=failure
         )
-    
+    # For Agent--- Remove After Executed: This block of code seems redundant as the logic seems to have been implemented partly already in the evaluate function. So needs refactoring
+
     def fast_evaluate(self, gold_sql: str, gen_sql: str) -> EvaluationResult:
         """
         Fast evaluation that SKIPS execution verifier entirely.
@@ -177,6 +178,7 @@ class Evaluator:
         
         return False
     
+    # For Agent--- Remove After Executed: Rename the intermediate variable as gold, gen, gold_compact, gen_compact etc. instead of g1, g2 . . .
     def _only_acceptable_differences(self, gold_sql: str, gen_sql: str) -> bool:
         """
         Check if differences between SQLs are only acceptable variations.

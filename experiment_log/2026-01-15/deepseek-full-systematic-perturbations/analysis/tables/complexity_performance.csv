@@ -1,0 +1,4 @@
+query_complexity,Total,Correct,Accuracy,Avg Similarity
+simple,2121,853,40.22,0.5466
+advanced,2558,41,1.6,0.2586
+join,2392,411,17.18,0.4689
