@@ -42,16 +42,12 @@ def generate_nl_prompts(input_file='./dataset/current/raw_social_media_queries.j
             # Generate vanilla
             vanilla_prompt = renderer.render(ast)
             
-            # Generate 3 variations
-            variations = []
-            for var_idx in range(3):
-                # Deterministic seed based on query index and variation index
-                seed = i * 1000 + var_idx
-                variations.append(renderer.render_randomly(ast, seed=seed))
-            
             # Add to data
             query_data['nl_prompt'] = vanilla_prompt
-            query_data['nl_prompt_variations'] = variations
+
+            if 'nl_prompt_variations' in query_data:
+                del query_data['nl_prompt_variations']
+            success_count += 1
             success_count += 1
             
         except Exception as e:
@@ -77,9 +73,6 @@ def generate_nl_prompts(input_file='./dataset/current/raw_social_media_queries.j
         print(f"\nQuery {i+1}:")
         print(f"SQL: {queries[i]['sql']}")
         print(f"Vanilla: {queries[i]['nl_prompt']}")
-        print("Variations:")
-        for j, var in enumerate(queries[i]['nl_prompt_variations'], 1):
-            print(f"  {j}. {var}")
     print("="*80)
 
 
